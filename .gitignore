@@ -1,0 +1,14 @@
+# 依赖文件
+page/app/node_modules
+page/console/node_modules
+# 生成文件
+page/app_dist
+page/console_dist
+auto-imports.d.ts
+components.d.ts
+# 测试文件
+config.ini
+local.store
+# 设计稿
+demo1.png
+demo2.png
