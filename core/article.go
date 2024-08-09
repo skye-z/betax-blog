@@ -1,6 +1,7 @@
 package core
 
 import (
+	"log"
 	"strconv"
 	"time"
 
@@ -37,6 +38,9 @@ func (service ArticleService) GetList(ctx *gin.Context) {
 	page := util.GetPostInt(ctx, "page", 1)
 	// 数量
 	num := util.GetPostInt(ctx, "num", 20)
+	log.Println(keyword)
+	log.Println(isBanner)
+	log.Println(isUp)
 	// 获取列表
 	list, err := service.Data.GetList(isBanner, isUp, keyword, state, page, num)
 	if err != nil {

@@ -9,12 +9,14 @@
         </n-message-provider>
       </n-dialog-provider>
     </n-loading-bar-provider>
-    <div id="app-center">
-      <head-bar />
-      <router-view />
-      <foot-bar />
-      <n-back-top :visibility-height="370" :right="20" :bottom="20" />
-    </div>
+    <n-scrollbar style="height: 100vh">
+      <div id="app-center">
+        <head-bar />
+        <router-view />
+        <foot-bar />
+        <n-back-top :visibility-height="370" :right="20" :bottom="20" />
+      </div>
+    </n-scrollbar>
   </n-config-provider>
 </template>
 

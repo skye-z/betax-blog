@@ -2,8 +2,8 @@
     <div class="head-bar pa-10 flex align-center justify-between">
         <div class="flex align-center">
             <img class="logo mr-10" src="../assets/logo.png" />
-            <n-button quaternary class="mr-10">首页</n-button>
-            <n-button quaternary class="mr-10">随便看看</n-button>
+            <n-button quaternary class="mr-10" @click="jump('/')">首页</n-button>
+            <n-button quaternary class="mr-10" @click="jump('/list')">随便看看</n-button>
             <n-dropdown trigger="hover" :options="class" @select="handleSelect">
                 <n-button quaternary>
                     <template #icon>
@@ -22,14 +22,6 @@
             </template>
         </n-input>
         <div class="right-bar flex align-center justify-end">
-            <n-button quaternary class="mr-10">
-                <template #icon>
-                    <n-icon>
-                        <ReadingList28Filled />
-                    </n-icon>
-                </template>
-                禅模式
-            </n-button>
             <n-button quaternary circle>
                 <template #icon>
                     <n-icon>
@@ -42,11 +34,11 @@
 </template>
 
 <script>
-import { MoreHorizontal32Filled, Search24Filled, ReadingList28Filled, Lightbulb24Filled } from '@vicons/fluent'
+import { MoreHorizontal32Filled, Search24Filled, Lightbulb24Filled } from '@vicons/fluent'
 
 export default {
     name: "HeadBar",
-    components: { MoreHorizontal32Filled, Search24Filled, ReadingList28Filled, Lightbulb24Filled },
+    components: { MoreHorizontal32Filled, Search24Filled, Lightbulb24Filled },
     data: () => ({
         class: [{
             label: '分类1',
@@ -57,13 +49,10 @@ export default {
         }]
     }),
     methods: {
-        init() {
-
+        jump(path) {
+            this.$router.push(path)
         }
-    },
-    mounted() {
-        this.init()
-    },
+    }
 };
 </script>
 

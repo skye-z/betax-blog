@@ -60,7 +60,7 @@ func (db ArticleData) Search(keyword string, page int, num int) ([]Article, erro
 // 获取文章列表
 func (db ArticleData) GetList(isBanner, isUp bool, keyword string, state, page, num int) ([]Article, error) {
 	var list []Article
-	cache := db.Engine.Where("(is_banner = ? OR is_up = ?)", isBanner, isUp)
+	cache := db.Engine.Where("is_banner = ? AND is_up = ?", isBanner, isUp)
 	if state != 0 {
 		cache.And("state = ?", state)
 	}

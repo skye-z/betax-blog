@@ -36,7 +36,8 @@ body {
 }
 
 .app-content {
-  max-width: 870px;
+  max-width: 890px;
+  padding: 0 10px;
   margin: 0 auto;
 }
 
@@ -69,9 +70,22 @@ body {
     background-color: var(--color-dark-2);
   }
 
+  .border-top {
+    border-top: 1px solid #343434;
+  }
+
   .border-bottom {
     border-bottom: 1px solid #343434;
   }
+}
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .text-center {
@@ -110,14 +124,34 @@ body {
   justify-content: end;
 }
 
+.float-right {
+  float: right;
+}
+
 /* ========== padding ========== */
 .pa-10 {
   padding: 10px;
 }
 
+.pa-20 {
+  padding: 20px;
+}
+
 /* ========== margin ========== */
 .mr-5 {
   margin-right: 5px;
+}
+
+.mt-5 {
+  margin-top: 5px;
+}
+
+.mb-5 {
+  margin-bottom: 5px;
+}
+
+.mt-10 {
+  margin-top: 10px;
 }
 
 .mr-10 {
@@ -134,4 +168,25 @@ body {
 
 .full-width {
   width: 100%;
+}
+
+.vditor-toolbar {
+  padding-left: 5px !important;
+}
+
+.vditor-reset {
+  color: var(--text-color-dark-1) !important;
+  padding: 20px !important;
+}
+
+.loading {
+  background-color: rgba(0, 0, 0, .3);
+  justify-content: center;
+  position: fixed;
+  display: flex;
+  z-index: 999;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
 }
