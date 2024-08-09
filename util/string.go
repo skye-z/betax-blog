@@ -58,3 +58,15 @@ func GetPostInt(ctx *gin.Context, name string, defaultValue int) int {
 	}
 	return value
 }
+
+func GetPostInt64(ctx *gin.Context, name string, defaultValue int64) int64 {
+	cache := ctx.PostForm(name)
+	if cache == "" {
+		return defaultValue
+	}
+	value, err := strconv.ParseInt(cache, 10, 64)
+	if err != nil {
+		return defaultValue
+	}
+	return value
+}

@@ -7,23 +7,24 @@
             关键词筛选、状态筛选
         </div>
         <div class="card mb-10 article-list">
-            <div v-for="(item, index) in list" class="article-item pa-10" @click="toEdit(item.id)" :class="{ 'border-top': index != 0 }">
+            <div v-for="(item, index) in list" class="article-item pa-10" @click="toEdit(item.id)"
+                :class="{ 'border-top': index != 0 }">
                 <n-button-group class="float-right">
-                    <n-button quaternary circle>
+                    <n-button quaternary circle :type="item.isUp ? 'primary':'default'">
                         <template #icon>
                             <n-icon>
                                 <ArrowAutofitUp24Filled />
                             </n-icon>
                         </template>
                     </n-button>
-                    <n-button quaternary circle>
+                    <n-button quaternary circle :type="item.isBanner ? 'primary':'default'">
                         <template #icon>
                             <n-icon>
                                 <CameraSwitch24Filled />
                             </n-icon>
                         </template>
                     </n-button>
-                    <n-button quaternary circle>
+                    <n-button quaternary circle v-if="item.state != 4">
                         <template #icon>
                             <n-icon>
                                 <Delete16Regular />
@@ -32,7 +33,39 @@
                     </n-button>
                 </n-button-group>
                 <div class="mb-5 title">{{ item.title }}</div>
-                <div>
+                <div class="flex align-center">
+                    <n-tag class="mr-5" size="small" v-if="item.state == 1" :bordered="false">
+                        <template #icon>
+                            <n-icon>
+                                <PresenceAway10Filled />
+                            </n-icon>
+                        </template>
+                        草稿
+                    </n-tag>
+                    <n-tag class="mr-5" size="small" v-else-if="item.state == 2" type="success" :bordered="false">
+                        <template #icon>
+                            <n-icon>
+                                <PresenceAvailable10Filled />
+                            </n-icon>
+                        </template>
+                        公开
+                    </n-tag>
+                    <n-tag class="mr-5" size="small" v-else-if="item.state == 3" type="warning" :bordered="false">
+                        <template #icon>
+                            <n-icon>
+                                <PresenceDnd10Filled />
+                            </n-icon>
+                        </template>
+                        私密
+                    </n-tag>
+                    <n-tag class="mr-5" size="small" v-else-if="item.state == 4" type="error" :bordered="false">
+                        <template #icon>
+                            <n-icon>
+                                <PresenceOffline10Regular />
+                            </n-icon>
+                        </template>
+                        删除
+                    </n-tag>
                     <n-tag class="mr-5" size="small" :bordered="false" type="success">
                         {{ classMapping[item.class] }}
                     </n-tag>
@@ -71,12 +104,12 @@
 </template>
 
 <script>
-import { ArrowAutofitUp24Filled, CameraSwitch24Filled, Delete16Regular } from '@vicons/fluent'
+import { PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, PresenceOffline10Regular,ArrowAutofitUp24Filled, CameraSwitch24Filled, Delete16Regular } from '@vicons/fluent'
 import { article } from '../plugins/api'
 
 export default {
     name: "List",
-    components: { ArrowAutofitUp24Filled, CameraSwitch24Filled, Delete16Regular },
+    components: { PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled, Delete16Regular },
     data: () => ({
         loading: true,
         keyword: '',
@@ -85,6 +118,12 @@ export default {
         count: 0,
         page: 1,
         list: [],
+        stateMapping: {
+            1: '草稿',
+            2: '公开',
+            3: '私密',
+            4: '删除',
+        },
         classMapping: {},
         tags: [],
     }),
@@ -150,8 +189,8 @@ export default {
                 window.$message.warning("获取文章列表出错");
             })
         },
-        toEdit(id){
-            this.$router.push('/edit/'+id);
+        toEdit(id) {
+            this.$router.push('/edit/' + id);
         }
     },
     mounted() {
@@ -161,7 +200,7 @@ export default {
 </script>
 
 <style scoped>
-.article-list{
+.article-list {
     min-height: calc(100vh - 201px);
 }
 

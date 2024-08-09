@@ -1,6 +1,6 @@
 <template>
     <div class="app-content no-select">
-        <div class="flex mb-10">
+        <div class="head-bar flex mb-10">
             <div class="card tips mr-10">
                 <div class="float-right pa-10">中午好呀 Skye 😊</div>
                 <div class="text-gray text-small pa-10 border-bottom">2024年08月02日 11:20</div>
@@ -88,11 +88,12 @@ export default {
 
 <style scoped>
 .tips {
-    min-width: 500px;
+    width: 100%;
 }
 
 .readme {
-    min-width: 300px;
+    min-width: 200px;
+    max-width: 300px;
     height: 97px;
 }
 
@@ -102,5 +103,15 @@ export default {
 
 .submit-btn{
     margin: 4px 4px 0 0;
+}
+
+@media only screen and (max-width: 767px) {
+    .head-bar{
+        display: block;
+    }
+
+    .tips{
+        margin-bottom: 10px;
+    }
 }
 </style>

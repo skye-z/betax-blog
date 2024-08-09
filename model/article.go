@@ -67,7 +67,7 @@ func (db ArticleData) GetList(isBanner, isUp bool, keyword string, state, page, 
 	if keyword != "" {
 		cache.And("title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
 	}
-	err := cache.Omit("content").Desc("weight", "release_time", "creation_time").Limit(page*num, (page-1)*num).Find(&list)
+	err := cache.Omit("content").Desc("weight", "creation_time", "release_time").Limit(page*num, (page-1)*num).Find(&list)
 	if err != nil {
 		return nil, err
 	}

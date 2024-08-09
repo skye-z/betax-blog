@@ -130,14 +130,14 @@ func (service ArticleService) Edit(ctx *gin.Context) {
 
 // 发布文章
 func (service ArticleService) Publish(ctx *gin.Context) {
-	cache := ctx.Param("id")
-	articleId, err := strconv.ParseInt(cache, 10, 64)
-	if err != nil {
+	articleId := util.GetPostInt64(ctx, "id", 0)
+	if articleId == 0 {
 		util.ReturnMessage(ctx, false, "文章编号无效")
 		return
 	}
 	article := service.Data.Get(articleId)
 	article.LastUpdateTime = time.Now().Unix() * 1000
+	article.ReleaseTime = time.Now().Unix() * 1000
 	article.State = model.Official
 	if service.Data.Edit(article) {
 		util.ReturnData(ctx, true, nil)
@@ -146,11 +146,28 @@ func (service ArticleService) Publish(ctx *gin.Context) {
 	}
 }
 
+// 切换状态
+func (service ArticleService) SwitchState(ctx *gin.Context) {
+	articleId := util.GetPostInt64(ctx, "id", 0)
+	if articleId == 0 {
+		util.ReturnMessage(ctx, false, "文章编号无效")
+		return
+	}
+	state := util.GetPostInt(ctx, "state", 2)
+	article := service.Data.Get(articleId)
+	article.LastUpdateTime = time.Now().Unix() * 1000
+	article.State = state
+	if service.Data.Edit(article) {
+		util.ReturnData(ctx, true, nil)
+	} else {
+		util.ReturnMessage(ctx, false, "文章状态更新失败")
+	}
+}
+
 // 删除文章
 func (service ArticleService) Remove(ctx *gin.Context) {
-	cache := ctx.Param("id")
-	articleId, err := strconv.ParseInt(cache, 10, 64)
-	if err != nil {
+	articleId := util.GetPostInt64(ctx, "id", 0)
+	if articleId == 0 {
 		util.ReturnMessage(ctx, false, "文章编号无效")
 		return
 	}

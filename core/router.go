@@ -127,6 +127,8 @@ func addPrivateRoute(router *gin.Engine, cs *ClassService, ts *TagService, as *A
 		private.POST("/api/article/edit", as.Edit)
 		// 发布文章接口
 		private.POST("/api/article/publish", as.Publish)
+		// 切换状态接口
+		private.POST("/api/article/switch", as.SwitchState)
 		// 文章AI摘要接口
 		private.GET("/api/article/abstract", as.Abstract)
 		// 删除文章接口

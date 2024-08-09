@@ -3,29 +3,31 @@
         <div class="flex mb-10">
             <n-input-group class="title mr-10">
                 <n-input-group-label>标题</n-input-group-label>
-                <n-input v-model:value="form.title" type="text" placeholder="为文章取个标题吧~" />
+                <n-input v-model:value="form.title" :disabled="loading" type="text" placeholder="为文章取个标题吧~" />
             </n-input-group>
             <n-button-group>
-                <n-button strong secondary @click="save(false)">保存</n-button>
-                <n-button strong secondary type="primary">发布</n-button>
+                <n-button strong secondary :disabled="loading" @click="save(false)">保存</n-button>
+                <n-button strong secondary v-if="form.state == 1" :loading="loading" type="primary" @click="publish">发布文章</n-button>
+                <n-button strong secondary v-else-if="form.state == 2" :loading="loading" type="warning" @click="switchState(3)">转为私密</n-button>
+                <n-button strong secondary v-else-if="form.state == 3" :loading="loading" type="info" @click="switchState(2)">转为公开</n-button>
             </n-button-group>
         </div>
         <div class="setting flex mb-10">
             <n-input-group class="class mr-10">
                 <n-input-group-label>分类</n-input-group-label>
-                <n-select v-model:value="form.classId" label-field="name" value-field="id" :options="classList"
+                <n-select v-model:value="form.classId" :disabled="loading" label-field="name" value-field="id" :options="classList"
                     placeholder="请选择分类" />
             </n-input-group>
             <n-input-group class="tags">
                 <n-input-group-label>标签</n-input-group-label>
-                <n-select class="tags" v-model:value="form.tags" label-field="name" value-field="id" multiple
+                <n-select class="tags" v-model:value="form.tags" :disabled="loading" label-field="name" value-field="id" multiple
                     :options="tagList" placeholder="请选择标签" />
             </n-input-group>
         </div>
         <n-input-group class="title mb-10">
             <n-input-group-label>摘要</n-input-group-label>
-            <n-input v-model:value="form.abstract" :disabled="ai" type="text" placeholder="不如让 AI 生成试试?" />
-            <n-button strong secondary :loading="ai" @click="aiBuild">
+            <n-input v-model:value="form.abstract" :disabled="loading || ai" type="text" placeholder="不如让 AI 生成试试?" />
+            <n-button strong secondary :disabled="loading" :loading="ai" @click="aiBuild">
                 <template #icon>
                     <n-icon>
                         <BrainCircuit20Filled />
@@ -64,7 +66,7 @@ export default {
             isBanner: false,
             isUp: false,
             abstract: '',
-            state: 1,
+            state: 0,
             releaseTime: null
         },
         editor: null,
@@ -74,6 +76,7 @@ export default {
         timer: 0,
         isFocused: true,
         last: 0,
+        loading: false,
         ai: false
     }),
     methods: {
@@ -170,11 +173,11 @@ export default {
                 this.initEditor('')
             })
         },
-        aiBuild(){
+        aiBuild() {
             this.save(true)
             this.ai = true
             article.aiBuild(this.form.id).then(res => {
-                if(res.state) this.form.abstract = res.data
+                if (res.state) this.form.abstract = res.data
                 else window.$message.warning(res.message ? res.message : 'AI摘要失败')
                 this.ai = false
             }).catch(err => {
@@ -243,6 +246,38 @@ export default {
             }).catch(err => {
                 console.log(err)
                 window.$message.error('保存出错')
+            })
+        },
+        publish() {
+            this.loading = true
+            let time = this.form.id == 0 ? 1000 : 100
+            if (this.form.id == 0) this.save(false)
+            setTimeout(() => {
+                article.publish(this.form.id).then(res => {
+                    if (res.state) {
+                        window.$message.success('发布成功')
+                        this.form.state = 2
+                    } else window.$message.warning(res.message ? res.message : '发布失败')
+                    this.loading = false
+                }).catch(err => {
+                    console.log(err)
+                    window.$message.error('发布出错')
+                    this.loading = false
+                })
+            }, time)
+        },
+        switchState(state) {
+            this.loading = true
+            article.switch(this.form.id,state).then(res => {
+                if (res.state) {
+                    window.$message.success('操作成功')
+                    this.form.state = state
+                } else window.$message.warning(res.message ? res.message : '操作失败')
+                this.loading = false
+            }).catch(err => {
+                console.log(err)
+                window.$message.error('操作出错')
+                this.loading = false
             })
         },
         controlTimer(state) {

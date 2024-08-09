@@ -13,7 +13,7 @@ function postJSON(url, data) {
 
 function post(url, data) {
     let cache = new URLSearchParams();
-    for(let key in data){
+    for (let key in data) {
         cache.append(key, data[key]);
     }
 
@@ -46,8 +46,11 @@ export const article = {
         id, isBanner, isUp, type, title, abstract, 'class': classId, tagIds: tags, content, state, releaseTime
     }),
     getInfo: id => get('/article/details/' + id),
-    getNumber: (keyword, state) => post('/article/number',{keyword, state}),
-    getList: (keyword, state, page, number) => post('/article/list',{keyword, state, page, number}),
+    getNumber: (keyword, state) => post('/article/number', { keyword, state }),
+    getList: (keyword, state, page, number) => post('/article/list', { keyword, state, page, number }),
+    publish: id => post('/article/publish', { id }),
+    switch: (id,state) => post('/article/switch', { id,state }),
+    remove: id => post('/article/remove', { id }),
     aiBuild: id => get('/article/abstract?id=' + id),
     getClass: () => get('/class'),
     getTags: () => get('/tags')

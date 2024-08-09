@@ -43,10 +43,13 @@ export default {
     data: () => ({
         class: [{
             label: '分类管理',
-            key: 'class1'
+            key: 'class'
         }, {
             label: '标签管理',
-            key: 'class2'
+            key: 'tags'
+        }, {
+            label: '文件管理',
+            key: 'file'
         }]
     }),
     methods: {
