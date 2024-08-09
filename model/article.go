@@ -1,6 +1,8 @@
 package model
 
-import "xorm.io/xorm"
+import (
+	"xorm.io/xorm"
+)
 
 // 状态枚举
 const (
@@ -20,29 +22,34 @@ const (
 
 // 文章模型
 type Article struct {
-	Id             int64  `json:"id"`             // 编号
-	Weight         int    `json:"weight"`         // 权重
-	IsBanner       bool   `json:"isBanner"`       // 横幅轮播
-	IsUp           bool   `json:"isUp"`           // 置顶
-	Type           int    `json:"type"`           // 类型(见上方枚举)
-	Title          string `json:"title"`          // 标题
-	Abstract       string `json:"abstract"`       // 摘要
-	Class          int64  `json:"class"`          // 分类
-	Content        string `json:"content"`        // 内容
-	State          int    `json:"state"`          // 状态(见上方枚举)
-	CreationTime   int64  `json:"creationTime"`   // 创建时间
-	LastUpdateTime int64  `json:"lastUpdateTime"` // 上次更新时间
-	ReleaseTime    int64  `json:"releaseTime"`    // 发布时间
+	Id             int64  `json:"id"`                // 编号
+	Weight         int    `json:"weight"`            // 权重
+	IsBanner       bool   `json:"isBanner"`          // 横幅轮播
+	IsUp           bool   `json:"isUp"`              // 置顶
+	Type           int    `json:"type"`              // 类型(见上方枚举)
+	Title          string `json:"title"`             // 标题
+	Abstract       string `json:"abstract"`          // 摘要
+	Class          int64  `json:"class"`             // 分类
+	Tags           *[]Tag `json:"tags" xorm:"-"`     // 标签
+	Content        string `json:"content,omitempty"` // 内容
+	State          int    `json:"state"`             // 状态(见上方枚举)
+	CreationTime   int64  `json:"creationTime"`      // 创建时间
+	LastUpdateTime int64  `json:"lastUpdateTime"`    // 上次更新时间
+	ReleaseTime    int64  `json:"releaseTime"`       // 发布时间
 }
 
 type ArticleData struct {
 	Engine *xorm.Engine
 }
 
+func (a *Article) SetTags(newTags []Tag) {
+	a.Tags = &newTags
+}
+
 // 搜索文章
 func (db ArticleData) Search(keyword string, page int, num int) ([]Article, error) {
 	var list []Article
-	err := db.Engine.Where("title LIKE ? OR abstract LIKE ?", keyword, keyword).Desc("weight", "releaseTime", "creationTime").Limit(page*num, (page-1)*num).Find(&list)
+	err := db.Engine.Where("title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Omit("content").Desc("weight", "releaseTime", "creationTime").Limit(page*num, (page-1)*num).Find(&list)
 	if err != nil {
 		return nil, err
 	}
@@ -50,22 +57,41 @@ func (db ArticleData) Search(keyword string, page int, num int) ([]Article, erro
 }
 
 // 获取文章列表
-func (db ArticleData) GetList(isBanner, isUp bool, state, page, num int) ([]Article, error) {
+func (db ArticleData) GetList(isBanner, isUp bool, keyword string, state, page, num int) ([]Article, error) {
 	var list []Article
-	err := db.Engine.Where("(isBanner = ? OR isUp = ?) AND state = ?", isBanner, isUp, state).Desc("weight", "releaseTime", "creationTime").Limit(page*num, (page-1)*num).Find(&list)
+	cache := db.Engine.Where("(is_banner = ? OR is_up = ?)", isBanner, isUp)
+	if state != 0 {
+		cache.And("state = ?", state)
+	}
+	if keyword != "" {
+		cache.And("title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
+	}
+	err := cache.Omit("content").Desc("weight", "release_time", "creation_time").Limit(page*num, (page-1)*num).Find(&list)
 	if err != nil {
 		return nil, err
+	}
+	tagData := &TagData{
+		Engine: db.Engine,
+	}
+	for i, item := range list {
+		tags, _ := tagData.GetList(item.Id)
+		(&list[i]).SetTags(tags)
 	}
 	return list, nil
 }
 
 // 获取文章数量
-func (db ArticleData) GetNumber(keyword string) (int64, error) {
+func (db ArticleData) GetNumber(keyword string, state int) (int64, error) {
 	var article Article
-	if keyword == "" {
+	if keyword == "" && state == 0 {
 		return db.Engine.Count(article)
 	} else {
-		return db.Engine.Where("title LIKE ? OR abstract LIKE ?", keyword, keyword).Count(article)
+		if keyword != "" && state != 0 {
+			return db.Engine.Where("title LIKE ? OR abstract LIKE ? AND state = ?", "%"+keyword+"%", "%"+keyword+"%", state).Count(article)
+		} else if keyword == "" {
+			return db.Engine.Where("state = ?", state).Count(article)
+		}
+		return db.Engine.Where("title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Count(article)
 	}
 }
 
@@ -78,6 +104,12 @@ func (db ArticleData) Get(id int64) *Article {
 	if !has {
 		return nil
 	}
+
+	tagData := &TagData{
+		Engine: db.Engine,
+	}
+	tags, _ := tagData.GetList(article.Id)
+	article.SetTags(tags)
 	return article
 }
 

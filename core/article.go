@@ -29,14 +29,16 @@ func (service ArticleService) GetList(ctx *gin.Context) {
 	isBanner := util.GetPostBool(ctx, "isBanner", false)
 	// 是否置顶
 	isUp := util.GetPostBool(ctx, "isUp", false)
+	// 筛选关键词
+	keyword := ctx.PostForm("keyword")
 	// 文章状态
-	state := util.GetPostInt(ctx, "state", model.Official)
+	state := util.GetPostInt(ctx, "state", 2)
 	// 页码
 	page := util.GetPostInt(ctx, "page", 1)
 	// 数量
 	num := util.GetPostInt(ctx, "num", 20)
 	// 获取列表
-	list, err := service.Data.GetList(isBanner, isUp, state, page, num)
+	list, err := service.Data.GetList(isBanner, isUp, keyword, state, page, num)
 	if err != nil {
 		util.ReturnMessage(ctx, false, "获取文章列表失败")
 	} else {
@@ -48,8 +50,10 @@ func (service ArticleService) GetList(ctx *gin.Context) {
 func (service ArticleService) GetNumber(ctx *gin.Context) {
 	// 筛选关键词
 	keyword := ctx.PostForm("keyword")
+	// 文章状态
+	state := util.GetPostInt(ctx, "state", 0)
 	// 获取数量
-	number, err := service.Data.GetNumber(keyword)
+	number, err := service.Data.GetNumber(keyword, state)
 	if err != nil {
 		util.ReturnMessage(ctx, false, "获取文章数量失败")
 	} else {
@@ -116,7 +120,7 @@ func (service ArticleService) Edit(ctx *gin.Context) {
 		return
 	}
 	// 写入更新时间
-	article.LastUpdateTime = time.Now().Unix()
+	article.LastUpdateTime = time.Now().Unix() * 1000
 	if service.Data.Edit(&article) {
 		util.ReturnData(ctx, true, nil)
 	} else {
@@ -133,7 +137,7 @@ func (service ArticleService) Publish(ctx *gin.Context) {
 		return
 	}
 	article := service.Data.Get(articleId)
-	article.LastUpdateTime = time.Now().Unix()
+	article.LastUpdateTime = time.Now().Unix() * 1000
 	article.State = model.Official
 	if service.Data.Edit(article) {
 		util.ReturnData(ctx, true, nil)

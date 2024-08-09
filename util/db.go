@@ -21,6 +21,10 @@ func InitDBTable(engine *xorm.Engine) {
 	if err != nil {
 		panic(err)
 	}
+	err = engine.Sync2(new(model.TagConnect))
+	if err != nil {
+		panic(err)
+	}
 	err = engine.Sync2(new(model.Tag))
 	if err != nil {
 		panic(err)

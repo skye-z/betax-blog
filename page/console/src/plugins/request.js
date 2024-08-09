@@ -8,7 +8,7 @@ const request = axios.create({
 
 request.interceptors.request.use(
     config => {
-        let token = localStorage.getItem("user:access:token");
+        let token = localStorage.getItem("access:token");
         if (token) config.headers['Authorization'] = 'Bearer '+token;
         return config
     },
@@ -26,7 +26,7 @@ request.interceptors.response.use(
             let code = parseInt(response.data.code);
             if (code >= 10100 && code <= 10103) {
                 window.$message.warning(response.data.message);
-                localStorage.removeItem("user:access:token");
+                localStorage.removeItem("access:token");
                 location.href = '/app'
             } else return response.data
         } else return response.data

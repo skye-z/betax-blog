@@ -1,17 +1,26 @@
 <template>
     <div class="app-content no-select">
         <div class="flex mb-10">
-            <n-input class="title mr-10" v-model:value="form.title" type="text" placeholder="为文章取个标题吧~" />
+            <n-input-group class="title mr-10">
+                <n-input-group-label>标题</n-input-group-label>
+                <n-input v-model:value="form.title" type="text" placeholder="为文章取个标题吧~" />
+            </n-input-group>
             <n-button-group>
                 <n-button strong secondary @click="save(false)">保存</n-button>
                 <n-button strong secondary type="primary">发布</n-button>
             </n-button-group>
         </div>
-        <div class="flex mb-10">
-            <n-select class="class mr-10" v-model:value="form.classId" label-field="name" value-field="id"
-                :options="classList" placeholder="请选择分类" />
-            <n-select v-model:value="form.tags" label-field="name" value-field="id" multiple :options="tagList"
-                placeholder="请选择标签" />
+        <div class="setting flex mb-10">
+            <n-input-group class="class mr-10">
+                <n-input-group-label>分类</n-input-group-label>
+                <n-select v-model:value="form.classId" label-field="name" value-field="id" :options="classList"
+                    placeholder="请选择分类" />
+            </n-input-group>
+            <n-input-group class="tags">
+                <n-input-group-label>标签</n-input-group-label>
+                <n-select class="tags" v-model:value="form.tags" label-field="name" value-field="id" multiple
+                    :options="tagList" placeholder="请选择标签" />
+            </n-input-group>
         </div>
         <div id="vditor" class="mb-10">
             <div class="tips">加载中</div>
@@ -129,6 +138,13 @@ export default {
                     this.form.abstract = info.abstract;
                     this.form.state = info.state;
                     this.form.releaseTime = info.releaseTime;
+                    let tags = [];
+                    if (info.tags) {
+                        for (let i in info.tags) {
+                            tags.push(info.tags[i].id)
+                        }
+                    }
+                    this.form.tags = tags;
 
                     this.cache = JSON.stringify(this.form) + "|" + info.content;
                     this.initEditor(info.content);
@@ -168,13 +184,14 @@ export default {
                 isBanner: this.form.isBanner,
                 isUp: this.form.isUp,
                 abstract: this.form.abstract,
+                tags: this.form.tags,
                 state: this.form.state,
                 releaseTime: this.form.releaseTime
             }, auto);
             this.last = new Date().getTime();
         },
         addArticle(form, auto) {
-            article.add(form.isBanner, form.isUp, 1, form.title, form.abstract, form.classId, form.content, 1, null).then(res => {
+            article.add(form.isBanner, form.isUp, 1, form.title, form.abstract, form.classId, form.tags, form.content, 1, null).then(res => {
                 if (res.state) {
                     if (!auto) window.$message.success('保存成功')
                     this.$router.replace('/edit/' + res.data)
@@ -189,7 +206,7 @@ export default {
             })
         },
         updateArticle(form, auto) {
-            article.edit(form.id, form.isBanner, form.isUp, 1, form.title, form.abstract, form.classId, form.content, form.state, form.releaseTime).then(res => {
+            article.edit(form.id, form.isBanner, form.isUp, 1, form.title, form.abstract, form.classId, form.tags, form.content, form.state, form.releaseTime).then(res => {
                 if (!auto) {
                     if (res.state) window.$message.success('保存成功')
                     else window.$message.warning(res.message ? res.message : '保存失败')
@@ -249,21 +266,39 @@ export default {
 
 <style scoped>
 .title {
-    min-width: 300px;
-    max-width: calc(100% - 122px);
+    width: 100%;
 }
 
 .class {
-    width: 200px;
+    width: 300px;
 }
 
 #vditor {
-    height: calc(100vh - 310px) !important;
+    height: calc(100vh - 231px) !important;
 }
 
 #vditor .tips {
     text-align: center;
     font-size: 32px;
     padding: 100px;
+}
+
+.tags:deep(.n-tag) {
+    background-color: var(--color-dark-3);
+}
+
+@media only screen and (max-width: 767px) {
+    .setting {
+        display: block !important;
+    }
+
+    .class {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    #vditor {
+        height: calc(100vh - 275px) !important;
+    }
 }
 </style>

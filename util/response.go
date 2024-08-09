@@ -29,7 +29,7 @@ func ReturnMessage(ctx *gin.Context, state bool, message string) {
 	ctx.JSON(200, commonResponse{
 		State:   state,
 		Message: message,
-		Time:    time.Now().Unix(),
+		Time:    time.Now().Unix() * 1000,
 	})
 	ctx.Abort()
 }
@@ -38,7 +38,7 @@ func ReturnData(ctx *gin.Context, state bool, obj any) {
 	ctx.JSON(200, commonResponse{
 		State: state,
 		Data:  obj,
-		Time:  time.Now().Unix(),
+		Time:  time.Now().Unix() * 1000,
 	})
 	ctx.Abort()
 }
@@ -48,7 +48,7 @@ func ReturnMessageData(ctx *gin.Context, state bool, message string, obj any) {
 		State:   state,
 		Message: message,
 		Data:    obj,
-		Time:    time.Now().Unix(),
+		Time:    time.Now().Unix() * 1000,
 	})
 	ctx.Abort()
 }
