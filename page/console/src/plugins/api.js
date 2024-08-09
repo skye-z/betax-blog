@@ -40,14 +40,15 @@ export const setting = {
 
 export const article = {
     add: (isBanner, isUp, type, title, abstract, classId, tags, content, state, releaseTime) => postJSON('/article/add', {
-        isBanner, isUp, type, title, abstract, 'class': classId, tags, content, state, releaseTime
+        isBanner, isUp, type, title, abstract, 'class': classId, tagIds: tags, content, state, releaseTime
     }),
     edit: (id, isBanner, isUp, type, title, abstract, classId, tags, content, state, releaseTime) => postJSON('/article/edit', {
-        id, isBanner, isUp, type, title, abstract, 'class': classId, tags, content, state, releaseTime
+        id, isBanner, isUp, type, title, abstract, 'class': classId, tagIds: tags, content, state, releaseTime
     }),
     getInfo: id => get('/article/details/' + id),
     getNumber: (keyword, state) => post('/article/number',{keyword, state}),
     getList: (keyword, state, page, number) => post('/article/list',{keyword, state, page, number}),
+    aiBuild: id => get('/article/abstract?id=' + id),
     getClass: () => get('/class'),
     getTags: () => get('/tags')
 }

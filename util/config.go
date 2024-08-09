@@ -55,7 +55,7 @@ func createDefault() {
 	viper.SetDefault("ai.secret", "")
 	viper.SetDefault("ai.server", "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")
 	viper.SetDefault("ai.model", "qwen2-1.5b-instruct")
-	viper.SetDefault("ai.setting", "你是个摘要大师, 擅长总结Markdown和HTML中的内容, 你写摘要内容要点明确且语言简练")
+	viper.SetDefault("ai.setting", "你是个摘要大师, 擅长总结Markdown和HTML中的内容, 你写摘要内容要点明确且语言简练, 你写的摘要可以控制在300字以内")
 	// OAuth2
 	viper.SetDefault("github.clientId", "")
 	viper.SetDefault("github.clientSecret", "")

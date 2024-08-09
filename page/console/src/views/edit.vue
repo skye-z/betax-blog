@@ -22,6 +22,18 @@
                     :options="tagList" placeholder="请选择标签" />
             </n-input-group>
         </div>
+        <n-input-group class="title mb-10">
+            <n-input-group-label>摘要</n-input-group-label>
+            <n-input v-model:value="form.abstract" :disabled="ai" type="text" placeholder="不如让 AI 生成试试?" />
+            <n-button strong secondary :loading="ai" @click="aiBuild">
+                <template #icon>
+                    <n-icon>
+                        <BrainCircuit20Filled />
+                    </n-icon>
+                </template>
+                AI摘要
+            </n-button>
+        </n-input-group>
         <div id="vditor" class="mb-10">
             <div class="tips">加载中</div>
         </div>
@@ -34,12 +46,14 @@
 </template>
 
 <script>
+import { BrainCircuit20Filled } from '@vicons/fluent'
 import { article } from '../plugins/api'
 import Vditor from 'vditor'
 import 'vditor/dist/index.css';
 
 export default {
     name: "Info",
+    components: { BrainCircuit20Filled },
     data: () => ({
         model: 'add',
         form: {
@@ -59,7 +73,8 @@ export default {
         tagList: [],
         timer: 0,
         isFocused: true,
-        last: 0
+        last: 0,
+        ai: false
     }),
     methods: {
         init() {
@@ -137,6 +152,7 @@ export default {
                     this.form.isUp = info.isUp;
                     this.form.abstract = info.abstract;
                     this.form.state = info.state;
+                    this.form.abstract = info.abstract;
                     this.form.releaseTime = info.releaseTime;
                     let tags = [];
                     if (info.tags) {
@@ -152,6 +168,19 @@ export default {
             }).catch(err => {
                 console.log(err)
                 this.initEditor('')
+            })
+        },
+        aiBuild(){
+            this.save(true)
+            this.ai = true
+            article.aiBuild(this.form.id).then(res => {
+                if(res.state) this.form.abstract = res.data
+                else window.$message.warning(res.message ? res.message : 'AI摘要失败')
+                this.ai = false
+            }).catch(err => {
+                console.log(err)
+                this.ai = false
+                window.$message.warning('AI摘要出错')
             })
         },
         save(auto) {
@@ -274,7 +303,7 @@ export default {
 }
 
 #vditor {
-    height: calc(100vh - 231px) !important;
+    height: calc(100vh - 275px) !important;
 }
 
 #vditor .tips {
@@ -298,7 +327,7 @@ export default {
     }
 
     #vditor {
-        height: calc(100vh - 275px) !important;
+        height: calc(100vh - 319px) !important;
     }
 }
 </style>

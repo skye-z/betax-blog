@@ -1,6 +1,8 @@
 package model
 
-import "xorm.io/xorm"
+import (
+	"xorm.io/xorm"
+)
 
 // 标签模型
 type Tag struct {
@@ -79,10 +81,53 @@ func (db TagData) AddConnect(connect *TagConnect) bool {
 }
 
 // 删除标签连接
-func (db TagData) DelConnect(id int64) bool {
+func (db TagData) DelConnect(article, tag int64) bool {
 	connect := &TagConnect{
-		Id: id,
+		Article: article,
+		Tag:     tag,
 	}
 	_, err := db.Engine.Delete(connect)
 	return err == nil
+}
+
+// 删除标签连接
+func (db TagData) UpdateConnect(article int64, ids *[]int64) bool {
+	var connect []TagConnect
+	err := db.Engine.Where("article = ?", article).Find(&connect)
+	if err != nil {
+		return false
+	}
+	// 遍历现有标签
+	for _, sup := range connect {
+		var exist bool
+		for _, sub := range *ids {
+			if sup.Tag == sub {
+				exist = true
+				break
+			}
+		}
+		// 判断传入标签是否存在
+		if !exist {
+			db.DelConnect(article, sup.Tag)
+		}
+	}
+	// 遍历传入标签
+	for _, sub := range *ids {
+		var exist bool
+		for _, sup := range connect {
+			if sup.Tag == sub {
+				exist = true
+				break
+			}
+		}
+		// 判断现有标签是否存在
+		if !exist {
+			obj := &TagConnect{
+				Article: article,
+				Tag:     sub,
+			}
+			db.AddConnect(obj)
+		}
+	}
+	return true
 }

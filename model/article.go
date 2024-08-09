@@ -22,20 +22,21 @@ const (
 
 // 文章模型
 type Article struct {
-	Id             int64  `json:"id"`                // 编号
-	Weight         int    `json:"weight"`            // 权重
-	IsBanner       bool   `json:"isBanner"`          // 横幅轮播
-	IsUp           bool   `json:"isUp"`              // 置顶
-	Type           int    `json:"type"`              // 类型(见上方枚举)
-	Title          string `json:"title"`             // 标题
-	Abstract       string `json:"abstract"`          // 摘要
-	Class          int64  `json:"class"`             // 分类
-	Tags           *[]Tag `json:"tags" xorm:"-"`     // 标签
-	Content        string `json:"content,omitempty"` // 内容
-	State          int    `json:"state"`             // 状态(见上方枚举)
-	CreationTime   int64  `json:"creationTime"`      // 创建时间
-	LastUpdateTime int64  `json:"lastUpdateTime"`    // 上次更新时间
-	ReleaseTime    int64  `json:"releaseTime"`       // 发布时间
+	Id             int64   `json:"id"`                // 编号
+	Weight         int     `json:"weight"`            // 权重
+	IsBanner       bool    `json:"isBanner"`          // 横幅轮播
+	IsUp           bool    `json:"isUp"`              // 置顶
+	Type           int     `json:"type"`              // 类型(见上方枚举)
+	Title          string  `json:"title"`             // 标题
+	Abstract       string  `json:"abstract"`          // 摘要
+	Class          int64   `json:"class"`             // 分类
+	TagIds         []int64 `json:"tagIds" xorm:"-"`   // 传入标签
+	Tags           *[]Tag  `json:"tags" xorm:"-"`     // 传出标签
+	Content        string  `json:"content,omitempty"` // 内容
+	State          int     `json:"state"`             // 状态(见上方枚举)
+	CreationTime   int64   `json:"creationTime"`      // 创建时间
+	LastUpdateTime int64   `json:"lastUpdateTime"`    // 上次更新时间
+	ReleaseTime    int64   `json:"releaseTime"`       // 发布时间
 }
 
 type ArticleData struct {
@@ -116,6 +117,10 @@ func (db ArticleData) Get(id int64) *Article {
 // 新增文章
 func (db ArticleData) Add(article *Article) bool {
 	_, err := db.Engine.Insert(article)
+	tagData := &TagData{
+		Engine: db.Engine,
+	}
+	tagData.UpdateConnect(article.Id, &article.TagIds)
 	return err == nil
 }
 
@@ -125,6 +130,10 @@ func (db ArticleData) Edit(article *Article) bool {
 		return false
 	}
 	_, err := db.Engine.ID(article.Id).Update(article)
+	tagData := &TagData{
+		Engine: db.Engine,
+	}
+	tagData.UpdateConnect(article.Id, &article.TagIds)
 	return err == nil
 }
 

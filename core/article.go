@@ -163,7 +163,7 @@ func (service ArticleService) Remove(ctx *gin.Context) {
 
 // 文章摘要
 func (service ArticleService) Abstract(ctx *gin.Context) {
-	cache := ctx.Param("id")
+	cache := ctx.Query("id")
 	articleId, err := strconv.ParseInt(cache, 10, 64)
 	if err != nil {
 		util.ReturnMessage(ctx, false, "文章编号无效")
