@@ -50,7 +50,7 @@ func (a *Article) SetTags(newTags []Tag) {
 // 搜索文章
 func (db ArticleData) Search(keyword string, page int, num int) ([]Article, error) {
 	var list []Article
-	err := db.Engine.Where("title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Omit("content").Desc("weight", "releaseTime", "creationTime").Limit(page*num, (page-1)*num).Find(&list)
+	err := db.Engine.Where("state = 2 AND title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%").Omit("content").Desc("weight", "release_time", "creation_time").Limit(page*num, (page-1)*num).Find(&list)
 	if err != nil {
 		return nil, err
 	}
@@ -58,16 +58,24 @@ func (db ArticleData) Search(keyword string, page int, num int) ([]Article, erro
 }
 
 // 获取文章列表
-func (db ArticleData) GetList(isBanner, isUp bool, keyword string, state, page, num int) ([]Article, error) {
+func (db ArticleData) GetList(isBanner, isUp bool, keyword string, class, state, page, num int) ([]Article, error) {
 	var list []Article
-	cache := db.Engine.Where("is_banner = ? AND is_up = ?", isBanner, isUp)
+	var cache *xorm.Session
+	if isBanner && isUp {
+		cache = db.Engine.Where("1=1")
+	} else {
+		cache = db.Engine.Where("is_banner = ? AND is_up = ?", isBanner, isUp)
+	}
+	if class >= 0 {
+		cache.And("class = ?", class)
+	}
 	if state != 0 {
 		cache.And("state = ?", state)
 	}
 	if keyword != "" {
 		cache.And("title LIKE ? OR abstract LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
 	}
-	err := cache.Omit("content").Desc("weight", "creation_time", "release_time").Limit(page*num, (page-1)*num).Find(&list)
+	err := cache.Omit("content").Desc("weight", "creation_time", "release_time").Limit(num, (page-1)*num).Find(&list)
 	if err != nil {
 		return nil, err
 	}

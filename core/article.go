@@ -1,7 +1,6 @@
 package core
 
 import (
-	"log"
 	"strconv"
 	"time"
 
@@ -32,17 +31,16 @@ func (service ArticleService) GetList(ctx *gin.Context) {
 	isUp := util.GetPostBool(ctx, "isUp", false)
 	// 筛选关键词
 	keyword := ctx.PostForm("keyword")
+	// 文章分类
+	class := util.GetPostInt(ctx, "class", -1)
 	// 文章状态
 	state := util.GetPostInt(ctx, "state", 2)
 	// 页码
 	page := util.GetPostInt(ctx, "page", 1)
 	// 数量
-	num := util.GetPostInt(ctx, "num", 20)
-	log.Println(keyword)
-	log.Println(isBanner)
-	log.Println(isUp)
+	num := util.GetPostInt(ctx, "number", 20)
 	// 获取列表
-	list, err := service.Data.GetList(isBanner, isUp, keyword, state, page, num)
+	list, err := service.Data.GetList(isBanner, isUp, keyword, class, state, page, num)
 	if err != nil {
 		util.ReturnMessage(ctx, false, "获取文章列表失败")
 	} else {
@@ -72,7 +70,7 @@ func (service ArticleService) Search(ctx *gin.Context) {
 	// 页码
 	page := util.GetPostInt(ctx, "page", 1)
 	// 数量
-	num := util.GetPostInt(ctx, "num", 20)
+	num := util.GetPostInt(ctx, "number", 20)
 	// 搜索符合的文章
 	list, err := service.Data.Search(keyword, page, num)
 	if err != nil {

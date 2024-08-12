@@ -25,9 +25,9 @@ function get(url) {
 
 export const article = {
     getInfo: id => get('/article/details/' + id),
-    search: keyword => post('/article/search', { keyword }),
+    search: (keyword, page, number) => post('/article/search', { keyword, page, number }),
     getNumber: (keyword, state) => post('/article/number', { keyword, state }),
-    getList: (isBanner, isUp, state, page, number) => post('/article/list', { isBanner: isBanner ? 1:0, isUp: isUp ? 1:0, state, page, number }),
+    getList: (isBanner, isUp, classId, state, page, number) => post('/article/list', { isBanner: isBanner ? 1:0, isUp: isUp ? 1:0, 'class':classId, state, page, number }),
     getClass: () => get('/class'),
     getTags: () => get('/tags')
 }

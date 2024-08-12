@@ -137,6 +137,10 @@ body {
   padding: 20px;
 }
 
+.pl-10{
+  padding-left: 10px;
+}
+
 /* ========== margin ========== */
 .mr-5 {
   margin-right: 5px;

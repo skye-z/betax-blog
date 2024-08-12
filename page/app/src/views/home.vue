@@ -1,28 +1,7 @@
 <template>
     <div class="app-content no-select">
         <div class="flex mb-10">
-            <div class="card carousel mr-10">
-                <n-carousel direction="vertical" dot-placement="right" show-arrow style="border-radius: 8px;">
-                    <div v-if="banner.length == 0" class="card carousel-item welcome flex align-center justify-center">
-                        <div>欢迎来访 👏</div>
-                    </div>
-                    <div v-for="item in banner" class="card carousel-item pa-10" @click="open(item.id)">
-                        <div class="banner-title">{{ item.title }}</div>
-                        <n-time v-if="item.releaseTime" class="text-gray" :time="item.releaseTime" />
-                        <div class="banner-abstract">{{ item.abstract }}</div>
-                        <div class="banner-foot flex align-center">
-                            <n-tag class="mr-5" size="small" :bordered="false" type="success">
-                                {{ classMapping[item.class] }}
-                            </n-tag>
-                            <template v-if="item.tags">
-                                <n-tag class="mr-5" size="small" v-for="tag in item.tags" :bordered="false" type="info">
-                                    {{ tag.name }}
-                                </n-tag>
-                            </template>
-                        </div>
-                    </div>
-                </n-carousel>
-            </div>
+            <article-banner class="mr-10" :list="banner" />
             <div class="full-width">
                 <div class="card readme mb-10 full-width">
                     <div class="flex pa-10 border-bottom">
@@ -68,113 +47,65 @@
             </div>
         </div>
         <div class="article-box">
-            <div v-for="item in tops" class="card article-item mb-10 pa-10" @click="open(item.id)">
-                <div class="mb-5 title">{{ item.title }}</div>
-                <div class="flex align-center">
-                    <n-tag class="mr-5" v-if="item.releaseTime" size="small" :bordered="false">
-                        <n-time :time="item.releaseTime" type="relative" />
-                    </n-tag>
-                    <n-tag class="mr-5" size="small" :bordered="false" type="success">
-                        {{ classMapping[item.class] }}
-                    </n-tag>
-                    <template v-if="item.tags">
-                        <n-tag class="mr-5" size="small" v-for="tag in item.tags" :bordered="false" type="info">
-                            {{ tag.name }}
-                        </n-tag>
-                    </template>
-                    <n-tag class="mr-5" size="small" :bordered="false" type="error">置顶</n-tag>
-                </div>
-                <div v-if="item.abstract" class="mt-10 pa-10 abstract">{{ item.abstract }}</div>
-            </div>
-            <div v-for="item in list" class="card article-item mb-10 pa-10" @click="open(item.id)">
-                <div class="mb-5 title">{{ item.title }}</div>
-                <div class="flex align-center">
-                    <n-tag class="mr-5" v-if="item.releaseTime" size="small" :bordered="false">
-                        <n-time :time="item.releaseTime" type="relative" />
-                    </n-tag>
-                    <n-tag class="mr-5" size="small" :bordered="false" type="success">
-                        {{ classMapping[item.class] }}
-                    </n-tag>
-                    <template v-if="item.tags">
-                        <n-tag class="mr-5" size="small" v-for="tag in item.tags" :bordered="false" type="info">
-                            {{ tag.name }}
-                        </n-tag>
-                    </template>
-                </div>
-                <div v-if="item.abstract" class="mt-10 pa-10 abstract">{{ item.abstract }}</div>
-            </div>
+            <article-list :list="tops" />
+            <article-list :list="list" />
             <div class="text-center">
-                <n-button class="load-more" strong secondary>加载更多</n-button>
+                <n-button class="load-more" :disabled="!next" strong secondary
+                    @click="getList(false, false)">加载更多</n-button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import ArticleList from '../components/articleList.vue'
+import ArticleBanner from '../components/articleBanner.vue'
 import { Github, Linkedin, Discord } from '@vicons/fa'
 import { QqOutlined } from '@vicons/antd'
 import { article } from '../plugins/api'
 
 export default {
     name: "Home",
-    components: { Github, Linkedin, QqOutlined, Discord },
+    components: { Github, Linkedin, QqOutlined, Discord, ArticleList, ArticleBanner },
     data: () => ({
         loading: true,
+        next: true,
         number: 20,
         page: 1,
         list: [],
         tops: [],
-        banner: [],
-        classMapping: {},
-        tags: [],
+        banner: []
     }),
     methods: {
         init() {
-            this.initClass();
-            this.initTags();
             this.getList(true, false);
             this.getList(false, true);
             this.getList(false, false);
         },
-        initClass() {
-            this.classMapping = {};
-            article.getClass().then(res => {
-                if (res.state) {
-                    let list = res.data
-                    for (let i in list) {
-                        this.classMapping[list[i].id] = list[i].name
-                    }
-                } else {
-                    window.$message.warning('获取分类列表失败');
-                }
-            }).catch(err => {
-                window.$message.warning("发生意料之外的错误");
-            })
-        },
-        initTags() {
-            this.tags = [];
-            article.getTags().then(res => {
-                if (res.state) this.tags = res.data
-                else {
-                    window.$message.warning('获取标签列表失败');
-                }
-            }).catch(err => {
-                window.$message.warning("发生意料之外的错误");
-            })
-        },
         getList(isBanner, isUp) {
-            article.getList(isBanner, isUp, 2, this.page, this.number).then(res => {
+            article.getList(isBanner, isUp, -1, 2, this.page, this.number).then(res => {
                 if (res.state) {
+                    if (res.data == null) res.data = []
                     if (isBanner) this.banner = res.data ? res.data : []
                     else if (isUp) this.tops = res.data ? res.data : []
                     else {
+                        let num = 0
                         let list = []
                         for (let i in res.data) {
                             let item = res.data[i]
                             if (item.isBanner || item.isUp) continue
                             list.push(item)
+                            num++
                         }
-                        this.list = list
+                        this.next = num == this.number
+                        if (res.data.length == 0) {
+                            window.$message.warning('已经到底啦');
+                            return false;
+                        }
+                        for (let i in res.data) {
+                            this.list.push(res.data[i])
+                        }
+                        if (this.next) this.page = this.page + 1;
                     }
                     this.loading = false;
                 } else {
@@ -202,41 +133,6 @@ export default {
     font-weight: bold;
 }
 
-.carousel {
-    width: 580px;
-    height: 300px;
-}
-
-.carousel-item {
-    width: 580px;
-    height: 300px;
-    position: relative;
-    cursor: pointer;
-}
-
-.banner-title {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.banner-abstract {
-    font-size: 18px;
-    line-height: 1.5;
-    width: calc(100% - 20px);
-
-    display: -webkit-box;
-    -webkit-line-clamp: 6;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.banner-foot {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-}
-
 .readme {
     height: 97px;
 }
@@ -247,22 +143,6 @@ export default {
 
 .article-list {
     height: 200px;
-}
-
-.article-item {
-    cursor: pointer;
-}
-
-.article-item:hover {
-    background-color: var(--color-dark-3);
-}
-
-.title {
-    font-size: 16px;
-}
-
-.abstract {
-    background-color: var(--color-dark-1);
 }
 
 .load-more {
