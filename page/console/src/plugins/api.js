@@ -47,7 +47,7 @@ export const article = {
     }),
     getInfo: id => get('/article/details/' + id),
     getNumber: (keyword, state) => post('/article/number', { keyword, state }),
-    getList: (keyword, state, page, number) => post('/article/list', { keyword, state, page, number }),
+    getList: (keyword, state, page, number) => post('/article/list', { isBanner: 1, isUp: 1,keyword, state, page, number }),
     publish: id => post('/article/publish', { id }),
     switch: (id,state) => post('/article/switch', { id,state }),
     remove: id => post('/article/remove', { id }),

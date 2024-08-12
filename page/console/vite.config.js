@@ -7,7 +7,7 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: '../app_dist'
+    outDir: '../console_dist'
   },
   plugins: [
     vue(), AutoImport({

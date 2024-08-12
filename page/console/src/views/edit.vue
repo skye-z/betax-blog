@@ -37,7 +37,7 @@
             </n-button>
         </n-input-group>
         <div id="vditor" class="mb-10">
-            <div class="tips">加载中</div>
+            <div class="tips">编辑器初始化中...</div>
         </div>
         <div class="text-center text-gray">
             <span>上次保存: </span>
