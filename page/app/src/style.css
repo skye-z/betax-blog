@@ -88,6 +88,15 @@ body {
   user-select: none;
 }
 
+.line1 {
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  display: -webkit-box;
+  overflow: hidden;
+}
+
+
 .text-center {
   text-align: center;
 }

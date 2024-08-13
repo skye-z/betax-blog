@@ -70,18 +70,19 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	ts := CreateTagService(engine)
 	as := CreateArticleService(engine)
 	ss := CreateSystemService()
+	common := &CommonService{Engine: engine}
 
 	// 挂载鉴权路由
 	addOAuth2Route(router.Object)
 	// 挂载公共路由
-	addPublicRoute(router.Object, cs, ts, as)
+	addPublicRoute(router.Object, common, cs, ts, as)
 	// 挂载私有路由
 	addPrivateRoute(router.Object, cs, ts, as, ss)
 	return router
 }
 
 // 挂载公共路由
-func addPublicRoute(router *gin.Engine, cs *ClassService, ts *TagService, as *ArticleService) {
+func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService, ts *TagService, as *ArticleService) {
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.Request.URL.Path = "/app"
 		router.HandleContext(ctx)
@@ -89,7 +90,9 @@ func addPublicRoute(router *gin.Engine, cs *ClassService, ts *TagService, as *Ar
 	// 初始化接口(系统基础配置)
 	// router.POST("/api/init", )
 	// 初始化接口(导航栏、页脚栏、布局信息等)
-	// router.GET("/api/init", )
+	router.GET("/api/init", common.GetInitData)
+	// 获取博主信息
+	router.GET("/api/user", common.GetUserInfo)
 
 	// 分类列表接口
 	router.GET("/api/class", cs.GetList)

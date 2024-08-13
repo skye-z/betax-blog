@@ -4,44 +4,24 @@
             <article-banner class="mr-10" :list="banner" />
             <div class="full-width">
                 <div class="card readme mb-10 full-width">
-                    <div class="flex pa-10 border-bottom">
-                        <n-avatar class="mr-10" size="large"
-                            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" />
+                    <div class="flex readme-info pa-10 border-bottom">
+                        <n-avatar class="readme-avatar mr-10" size="large" :src="user.avatar" />
                         <div>
-                            <div>Skye Zhang</div>
-                            <div class="text-gray text-small">@skye-z</div>
+                            <div class="flex align-center">
+                                <div class="mr-5">{{ user.nickname }}</div>
+                                <div class="text-gray text-small">@{{ user.username }}</div>
+                            </div>
+                            <div class="text-gray text-small lint1">{{ user.bio }}</div>
                         </div>
                     </div>
-                    <div>
-                        <n-button class="social-btn" quaternary>
-                            <template #icon>
-                                <n-icon>
-                                    <Github />
-                                </n-icon>
-                            </template>
-                        </n-button>
-                        <n-button class="social-btn" quaternary disabled>
-                            <template #icon>
-                                <n-icon>
-                                    <QqOutlined />
-                                </n-icon>
-                            </template>
-                        </n-button>
-                        <n-button class="social-btn" quaternary disabled>
-                            <template #icon>
-                                <n-icon>
-                                    <Linkedin />
-                                </n-icon>
-                            </template>
-                        </n-button>
-                        <n-button class="social-btn" quaternary disabled>
-                            <template #icon>
-                                <n-icon>
-                                    <Discord />
-                                </n-icon>
-                            </template>
-                        </n-button>
-                    </div>
+                    <n-button class="full-width" quaternary @click="openGithub">
+                        <template #icon>
+                            <n-icon>
+                                <Github />
+                            </n-icon>
+                        </template>
+                        前往 Github 主页
+                    </n-button>
                 </div>
                 <div class="card tag-cloud pa-10 full-width">标签云</div>
             </div>
@@ -62,7 +42,7 @@ import ArticleList from '../components/articleList.vue'
 import ArticleBanner from '../components/articleBanner.vue'
 import { Github, Linkedin, Discord } from '@vicons/fa'
 import { QqOutlined } from '@vicons/antd'
-import { article } from '../plugins/api'
+import { common, article } from '../plugins/api'
 
 export default {
     name: "Home",
@@ -74,39 +54,44 @@ export default {
         page: 1,
         list: [],
         tops: [],
-        banner: []
+        banner: [],
+        user: {}
     }),
     methods: {
         init() {
-            this.getList(true, false);
-            this.getList(false, true);
-            this.getList(false, false);
+            this.getUser();
+            common.init().then(res => {
+                if (res.state) {
+                    this.banner = res.data.banner ? res.data.banner : []
+                    this.tops = res.data.up ? res.data.up : []
+                    this.buildList(res.data.list)
+                    this.loading = false;
+                } else {
+                    window.$message.warning('初始化失败');
+                    this.loading = false;
+                }
+            }).catch(err => {
+                this.loading = false;
+                window.$message.warning("初始化出错");
+            })
+        },
+        getUser() {
+            common.getUser().then(res => {
+                if (res.state) {
+                    if (res.data.bio.length > 70) res.data.bio = res.data.bio.substring(0,68) + '...'
+                    this.user = res.data
+                } else {
+                    window.$message.warning('获取博主信息失败');
+                    this.loading = false;
+                }
+            }).catch(err => {
+                window.$message.warning("获取博主信息出错");
+            })
         },
         getList(isBanner, isUp) {
             article.getList(isBanner, isUp, -1, 2, this.page, this.number).then(res => {
                 if (res.state) {
-                    if (res.data == null) res.data = []
-                    if (isBanner) this.banner = res.data ? res.data : []
-                    else if (isUp) this.tops = res.data ? res.data : []
-                    else {
-                        let num = 0
-                        let list = []
-                        for (let i in res.data) {
-                            let item = res.data[i]
-                            if (item.isBanner || item.isUp) continue
-                            list.push(item)
-                            num++
-                        }
-                        this.next = num == this.number
-                        if (res.data.length == 0) {
-                            window.$message.warning('已经到底啦');
-                            return false;
-                        }
-                        for (let i in res.data) {
-                            this.list.push(res.data[i])
-                        }
-                        if (this.next) this.page = this.page + 1;
-                    }
+                    this.buildList(res.data)
                     this.loading = false;
                 } else {
                     window.$message.warning('获取文章列表失败');
@@ -117,8 +102,32 @@ export default {
                 window.$message.warning("获取文章列表出错");
             })
         },
+        buildList(data) {
+            if (data == null) data = []
+
+            let num = 0
+            let list = []
+            for (let i in data) {
+                let item = data[i]
+                if (item.isBanner || item.isUp) continue
+                list.push(item)
+                num++
+            }
+            this.next = num == this.number
+            if (data.length == 0) {
+                window.$message.warning('已经到底啦');
+                return false;
+            }
+            for (let i in list) {
+                this.list.push(list[i])
+            }
+            if (this.next) this.page = this.page + 1;
+        },
         open(id) {
             this.$router.push('/info/' + id)
+        },
+        openGithub(){
+            window.open('https://github.com/' + this.user.username)
         }
     },
     mounted() {
@@ -134,11 +143,21 @@ export default {
 }
 
 .readme {
-    height: 97px;
+    height: 117px;
+}
+
+.readme-info{
+    height: 84px;
+}
+
+.readme-avatar{
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
 }
 
 .tag-cloud {
-    height: 192px;
+    height: 172px;
 }
 
 .article-list {

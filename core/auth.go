@@ -56,25 +56,28 @@ func (as AuthService) Callback(ctx *gin.Context) {
 	}
 	// 换取授权信息
 	token := res.AccessToken
-	id, name, err := as.QueryUserInfo(token)
-	if err != nil || id == "" {
+	user, err := as.QueryUserInfo(token)
+	if err != nil || user == nil {
 		// 授权信息无效
 		ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=2")
 		return
 	}
-	check := util.GetString("github.bindId")
+
+	check := util.GetString("github.bind")
 	if check == "" {
-		util.Set("github.bindId", id)
-		util.Set("github.bindUser", name)
+		userJSON, _ := json.Marshal(user)
+		util.Set("github.bind", string(userJSON))
 	} else {
-		if check != id {
+		var checkUser User
+		err := json.Unmarshal([]byte(check), &checkUser)
+		if err != nil || checkUser.Id != user.Id {
 			// 账户错误
 			ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=3")
 			return
 		}
 	}
 	// 签发令牌
-	token, exp, err := GenerateToken(id)
+	token, exp, err := GenerateToken(user.Id)
 	if err != nil {
 		// 令牌签发失败
 		ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=4")
@@ -83,34 +86,46 @@ func (as AuthService) Callback(ctx *gin.Context) {
 	ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/app/#/auth?state=9&code=%s&exp=%v", token, exp))
 }
 
+type User struct {
+	Id       string `json:"id"`
+	Avatar   string `json:"avatar"`
+	Nickname string `json:"nickname"`
+	Username string `json:"username"`
+	Bio      string `json:"bio"`
+}
+
 // 查询 OAuth2 用户信息
-func (as AuthService) QueryUserInfo(token string) (string, string, error) {
+func (as AuthService) QueryUserInfo(token string) (*User, error) {
 	// 获取用户信息
 	result, err := as.getUserInfo(token)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
-	// 解析用户信息
-	oauth2Id := ""
-	oauth2Name := ""
+	user := User{}
 	for key, value := range result {
 		if key == "id" {
 			if strVal, ok := value.(string); ok {
-				oauth2Id = strVal
+				user.Id = strVal
 			} else if strVal, ok := value.(int16); ok {
-				oauth2Id = strconv.FormatInt(int64(strVal), 10)
+				user.Id = strconv.FormatInt(int64(strVal), 10)
 			} else if strVal, ok := value.(float64); ok {
-				oauth2Id = strconv.FormatFloat(float64(strVal), 'f', -1, 64)
+				user.Id = strconv.FormatFloat(float64(strVal), 'f', -1, 64)
 			}
 		}
-		if key == "name" {
-			if strVal, ok := value.(string); ok {
-				oauth2Name = strVal
+		if strVal, ok := value.(string); ok {
+			if key == "login" {
+				user.Username = strVal
+			} else if key == "name" {
+				user.Nickname = strVal
+			} else if key == "bio" {
+				user.Bio = strVal
+			} else if key == "avatar_url" {
+				user.Avatar = strVal
 			}
 		}
 	}
-	return oauth2Id, oauth2Name, err
+	return &user, err
 }
 
 // 获取 OAuth2 用户信息

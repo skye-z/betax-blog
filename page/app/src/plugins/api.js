@@ -23,6 +23,11 @@ function get(url) {
     })
 }
 
+export const common = {
+    init: () => get('/init'),
+    getUser: () => get('/user'),
+}
+
 export const article = {
     getInfo: id => get('/article/details/' + id),
     search: (keyword, page, number) => post('/article/search', { keyword, page, number }),
