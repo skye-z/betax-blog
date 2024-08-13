@@ -23,7 +23,11 @@
                         前往 Github 主页
                     </n-button>
                 </div>
-                <div class="card tag-cloud pa-10 full-width">标签云</div>
+                <div class="card tag-cloud pt-10 pl-10 full-width">
+                    <n-tag class="mr-10 mb-10" v-for="(item, i) in tags" :bordered="false" type="success">
+                        {{ item.name }}
+                    </n-tag>
+                </div>
             </div>
         </div>
         <div class="article-box">
@@ -55,11 +59,19 @@ export default {
         list: [],
         tops: [],
         banner: [],
+        tags: [],
         user: {}
     }),
     methods: {
         init() {
-            this.getUser();
+            let tags = localStorage.getItem('cache:tags');
+            if (tags != undefined) {
+                this.tags = JSON.parse(tags)
+            }
+            let user = localStorage.getItem('cache:user');
+            if (user != undefined) {
+                this.user = JSON.parse(user)
+            }
             common.init().then(res => {
                 if (res.state) {
                     this.banner = res.data.banner ? res.data.banner : []
@@ -73,19 +85,6 @@ export default {
             }).catch(err => {
                 this.loading = false;
                 window.$message.warning("初始化出错");
-            })
-        },
-        getUser() {
-            common.getUser().then(res => {
-                if (res.state) {
-                    if (res.data.bio.length > 70) res.data.bio = res.data.bio.substring(0,68) + '...'
-                    this.user = res.data
-                } else {
-                    window.$message.warning('获取博主信息失败');
-                    this.loading = false;
-                }
-            }).catch(err => {
-                window.$message.warning("获取博主信息出错");
             })
         },
         getList(isBanner, isUp) {
@@ -126,7 +125,7 @@ export default {
         open(id) {
             this.$router.push('/info/' + id)
         },
-        openGithub(){
+        openGithub() {
             window.open('https://github.com/' + this.user.username)
         }
     },
@@ -146,11 +145,11 @@ export default {
     height: 117px;
 }
 
-.readme-info{
+.readme-info {
     height: 84px;
 }
 
-.readme-avatar{
+.readme-avatar {
     min-width: 40px;
     width: 40px;
     height: 40px;

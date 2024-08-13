@@ -22,12 +22,14 @@
 
 * {
   box-sizing: border-box;
-  --n-color-start: #fff !important;
+  /* --n-color-start: #fff !important; */
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  color: var(--text-color-light-1);
+  background-color: var(--color-light-1);
 }
 
 #app-center {
@@ -43,40 +45,33 @@ body {
 
 .card {
   border-radius: 8px;
+  background-color: var(--color-light-2);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: var(--text-color-light-1);
-    background-color: var(--color-light-1);
-  }
-
-  .card {
-    background-color: var(--color-light-2);
-  }
+body.dark {
+  color: var(--text-color-dark-1);
+  background-color: var(--color-dark-1);
+  background-image: radial-gradient(circle at 50% 0, #2c004e, transparent 50%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: var(--text-color-dark-1);
-    background-color: var(--color-dark-1);
-  }
+.dark .card {
+  background-color: var(--color-dark-2);
+}
 
-  body {
-    background-image: radial-gradient(circle at 50% 0, #2c004e, transparent 50%);
-  }
+.border-top {
+  border-top: 1px solid #d7d7d7;
+}
 
-  .card {
-    background-color: var(--color-dark-2);
-  }
+.border-bottom {
+  border-bottom: 1px solid #d7d7d7;
+}
 
-  .border-top {
-    border-top: 1px solid #343434;
-  }
+.dark .border-top {
+  border-top: 1px solid #343434;
+}
 
-  .border-bottom {
-    border-bottom: 1px solid #343434;
-  }
+.dark .border-bottom {
+  border-bottom: 1px solid #343434;
 }
 
 .no-select {
@@ -87,15 +82,6 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
-
-.line1 {
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  overflow: hidden;
-}
-
 
 .text-center {
   text-align: center;
@@ -146,7 +132,19 @@ body {
   padding: 20px;
 }
 
-.pl-10{
+.pt-10 {
+  padding-top: 10px;
+}
+
+.pr-10 {
+  padding-right: 10px;
+}
+
+.pb-10 {
+  padding-bottom: 10px;
+}
+
+.pl-10 {
   padding-left: 10px;
 }
 

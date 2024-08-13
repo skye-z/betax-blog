@@ -114,6 +114,10 @@ export default {
 
 .abstract-box{
     position: relative;
+    background-color: var(--color-light-3);
+}
+
+.dark .abstract-box{
     background-color: var(--color-dark-1);
 }
 

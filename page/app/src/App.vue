@@ -13,7 +13,7 @@
       <div id="app-center">
         <head-bar :classList="classList" />
         <router-view />
-        <foot-bar />
+        <foot-bar :info="user" />
         <n-back-top :visibility-height="370" :right="20" :bottom="20" />
       </div>
     </n-scrollbar>
@@ -21,32 +21,51 @@
 </template>
 
 <script>
-import { zhCN, dateZhCN, darkTheme } from 'naive-ui'
+import { zhCN, dateZhCN, darkTheme, lightTheme } from 'naive-ui'
 import GlobalApi from './components/globalApi.vue'
 import HeadBar from './components/headBar.vue'
 import FootBar from './components/footBar.vue'
-import { article } from './plugins/api'
+import { common, article } from './plugins/api'
+import { useThemeStore } from './plugins/store'
 import theme from './theme.json'
 
 export default {
   name: "App",
   components: { GlobalApi, HeadBar },
   data: () => ({
-    theme: darkTheme,
     i18n: {
       main: zhCN,
       date: dateZhCN
     },
-    classList: []
+    classList: [],
+    user: {}
   }),
+  computed: {
+    theme(){
+      const themeStore = useThemeStore();
+      return themeStore.isDark ? darkTheme:lightTheme;
+    }
+  },
   methods: {
     init() {
       this.initClass();
       this.initTags();
+      this.initUser();
+    },
+    initUser() {
+      common.getUser().then(res => {
+        if (res.state) {
+          if (res.data.bio.length > 70) res.data.bio = res.data.bio.substring(0, 68) + '...'
+          this.user = res.data
+        }
+        localStorage.setItem('cache:user', res.state ? JSON.stringify(res.data) : '{}')
+      }).catch(err => {
+        localStorage.setItem('cache:user', '{}')
+      })
     },
     initClass() {
       article.getClass().then(res => {
-        this.classList = res.state ? res.data:[];
+        this.classList = res.state ? res.data : [];
         localStorage.setItem('cache:class', res.state ? JSON.stringify(res.data) : '[]')
       }).catch(err => {
         localStorage.setItem('cache:class', '[]')
