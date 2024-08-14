@@ -22,10 +22,11 @@
                     </n-icon>
                 </template>
             </n-button>
-            <n-button quaternary circle>
+            <n-button quaternary circle @click="toggleTheme">
                 <template #icon>
                     <n-icon>
-                        <Lightbulb24Filled />
+                        <Lightbulb24Filled v-if="isDark" />
+                        <LightbulbFilament24Filled v-else />
                     </n-icon>
                 </template>
             </n-button>
@@ -34,12 +35,13 @@
 </template>
 
 <script>
-import { MoreHorizontal32Filled, Lightbulb24Filled } from '@vicons/fluent'
+import { MoreHorizontal32Filled, Lightbulb24Filled, LightbulbFilament24Filled } from '@vicons/fluent'
+import { useThemeStore } from '../plugins/store'
 import { SettingFilled } from '@vicons/antd'
 
 export default {
     name: "HeadBar",
-    components: { MoreHorizontal32Filled, SettingFilled, Lightbulb24Filled },
+    components: { MoreHorizontal32Filled, SettingFilled, Lightbulb24Filled, LightbulbFilament24Filled },
     data: () => ({
         class: [{
             label: '分类管理',
@@ -52,9 +54,19 @@ export default {
             key: 'file'
         }]
     }),
+    computed: {
+        isDark() {
+            const themeStore = useThemeStore();
+            return themeStore.isDark;
+        }
+    },
     methods: {
         jump(path) {
             this.$router.push(path)
+        },
+        toggleTheme() {
+            const themeStore = useThemeStore();
+            themeStore.toggleTheme();
         }
     }
 };
@@ -62,6 +74,10 @@ export default {
 
 <style scoped>
 .head-bar {
+    color: var(--text-color-light-2);
+}
+
+.dark .head-bar{
     color: var(--text-color-dark-2);
 }
 

@@ -22,7 +22,6 @@
 
 * {
   box-sizing: border-box;
-  /* --n-color-start: #fff !important; */
 }
 
 body {
@@ -30,6 +29,7 @@ body {
   min-height: 100vh;
   color: var(--text-color-light-1);
   background-color: var(--color-light-1);
+  background-image: radial-gradient(circle at 50% 0, #dbdbdb, transparent 50%);
 }
 
 #app-center {

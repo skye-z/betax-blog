@@ -2,7 +2,7 @@
     <div class="tips-box no-select">
         <n-result :status="state == 9 ? 'success':'warning'" :title="getTitle()" :description="getDescription()">
             <template v-if="state != 9" #footer>
-                <n-button>返回首页</n-button>
+                <n-button @click="back">返回首页</n-button>
             </template>
         </n-result>
     </div>
@@ -44,6 +44,9 @@ export default {
             else if (this.state == 3) return '当前授权的 Github 账户与系统绑定账户不一致'
             else if (this.state == 4) return '生成令牌时发生错误, 请检查密钥配置是否正确'
             else if (this.state == 9) return '欢迎回来, 正在跳转控制台...'
+        },
+        back(){
+            this.$router.push('/')
         }
     },
     mounted() {

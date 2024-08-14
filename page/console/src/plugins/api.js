@@ -34,7 +34,9 @@ function get(url) {
     })
 }
 
-export const setting = {
+export const common = {
+    init: () => get('/init'),
+    getUser: () => get('/user'),
     getPing: () => get('/ping')
 }
 

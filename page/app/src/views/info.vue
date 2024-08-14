@@ -1,6 +1,6 @@
 <template>
     <div class="app-content no-select">
-        <div class="card pb-10">
+        <div class="card">
             <div class="title pa-10 border-bottom">
                 <div>{{ info.title }}</div>
                 <div class="flex text-small text-gray">

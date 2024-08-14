@@ -2,19 +2,21 @@
     <div class="app-content no-select">
         <div class="head-bar flex mb-10">
             <div class="card tips mr-10">
-                <div class="float-right pa-10">中午好呀 Skye 😊</div>
+                <div class="float-right pa-10">中午好呀 {{ user.nickname }} 😊</div>
                 <div class="text-gray text-small pa-10 border-bottom">2024年08月02日 11:20</div>
                 <div class="pa-10">
                     <div>本周你已经写了3片文章了, 今天要不再写点什么?</div>
                 </div>
             </div>
             <div class="card readme full-width">
-                <div class="flex pa-10 border-bottom">
-                    <n-avatar class="mr-10" size="large"
-                        src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" />
+                <div class="flex readme-info pa-10 border-bottom">
+                    <n-avatar class="readme-avatar mr-10" size="large" :src="user.avatar" />
                     <div>
-                        <div>Skye Zhang</div>
-                        <div class="text-gray text-small">@skye-z</div>
+                        <div class="flex align-center">
+                            <div class="mr-5">{{ user.nickname }}</div>
+                            <div class="text-gray text-small">@{{ user.username }}</div>
+                        </div>
+                        <div class="text-gray text-small lint1">{{ user.bio }}</div>
                     </div>
                 </div>
                 <n-button strong secondary type="primary" class="full-width" @click="jump('/add')">撰写新文章</n-button>
@@ -24,10 +26,11 @@
             <n-button class="float-right submit-btn" :loading="submit" type="primary" @click="addNote">保存</n-button>
             <div class="pa-10">随手记</div>
             <div class="">
-                <n-input v-model:value="note" :disabled="submit" placeholder="随手写点什么吧, 别管格式了" type="textarea" size="small" :autosize="{
-                    minRows: 20,
-                    maxRows: 20,
-                }" />
+                <n-input v-model:value="note" :disabled="submit" placeholder="随手写点什么吧, 别管格式了" type="textarea"
+                    size="small" :autosize="{
+                        minRows: 20,
+                        maxRows: 20,
+                    }" />
             </div>
         </div>
     </div>
@@ -43,11 +46,15 @@ export default {
     components: { Github, Linkedin, QqOutlined, Discord },
     data: () => ({
         note: '',
-        submit: false
+        submit: false,
+        user: {}
     }),
     methods: {
         init() {
-
+            let user = localStorage.getItem('cache:user');
+            if (user != undefined) {
+                this.user = JSON.parse(user)
+            }
         },
         jump(path) {
             this.$router.push(path)
@@ -94,23 +101,23 @@ export default {
 .readme {
     min-width: 200px;
     max-width: 300px;
-    height: 97px;
+    height: 116px;
 }
 
 .readme:deep(.social-btn) {
     width: 25%;
 }
 
-.submit-btn{
+.submit-btn {
     margin: 4px 4px 0 0;
 }
 
 @media only screen and (max-width: 767px) {
-    .head-bar{
+    .head-bar {
         display: block;
     }
 
-    .tips{
+    .tips {
         margin-bottom: 10px;
     }
 }

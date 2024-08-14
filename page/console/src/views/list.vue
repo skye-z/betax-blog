@@ -209,6 +209,10 @@ export default {
 }
 
 .article-item:hover {
+    background-color: var(--color-light-3);
+}
+
+.dark .article-item:hover {
     background-color: var(--color-dark-3);
 }
 
@@ -217,7 +221,11 @@ export default {
 }
 
 .abstract {
-    background-color: var(--color-dark-1);
+    background-color: var(--color-light-1);
+}
+
+.dark .abstract {
+    background-color: var(--color-dark-3);
 }
 
 .time-item {

@@ -208,11 +208,21 @@ func AuthHandler() gin.HandlerFunc {
 			util.ReturnError(ctx, util.Errors.TokenNotAvailableError)
 			return
 		}
-		check := util.GetString("github.bindId")
-		if check != sub {
+		check := util.GetString("github.bind")
+		if check == "" {
 			util.ReturnError(ctx, util.Errors.TokenNotAvailableError)
 			return
 		}
-		ctx.Set("user", util.GetString("github.bindUser"))
+		var checkUser User
+		err = json.Unmarshal([]byte(check), &checkUser)
+		if err != nil {
+			util.ReturnError(ctx, util.Errors.TokenNotAvailableError)
+			return
+		}
+		if checkUser.Id != sub {
+			// 账户错误
+			ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=3")
+			return
+		}
 	}
 }

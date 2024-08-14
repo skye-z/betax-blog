@@ -75,7 +75,7 @@ export default {
     background-color: var(--color-light-1);
 }
 
-.dark .article-item:hover {
+.dark .abstract {
     background-color: var(--color-dark-3);
 }
 </style>
