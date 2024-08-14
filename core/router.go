@@ -65,6 +65,7 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	consolePage, _ := fs.Sub(page, "page/console_dist")
 	router.Object.StaticFS("/app", http.FS(appPage))
 	router.Object.StaticFS("/console", http.FS(consolePage))
+	router.Object.Static("/res", "./res")
 
 	cs := CreateClassService(engine)
 	ts := CreateTagService(engine)
@@ -77,7 +78,7 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	// 挂载公共路由
 	addPublicRoute(router.Object, common, cs, ts, as)
 	// 挂载私有路由
-	addPrivateRoute(router.Object, cs, ts, as, ss)
+	addPrivateRoute(router.Object, common, cs, ts, as, ss)
 	return router
 }
 
@@ -114,7 +115,7 @@ func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService,
 }
 
 // 挂载私有路由
-func addPrivateRoute(router *gin.Engine, cs *ClassService, ts *TagService, as *ArticleService, ss *SystemService) {
+func addPrivateRoute(router *gin.Engine, common *CommonService, cs *ClassService, ts *TagService, as *ArticleService, ss *SystemService) {
 	private := router.Group("").Use(AuthHandler())
 	{
 		// 时间接口
@@ -123,6 +124,9 @@ func addPrivateRoute(router *gin.Engine, cs *ClassService, ts *TagService, as *A
 		// private.POST("/api/setting", )
 		// 垃圾清理接口
 		// private.POST("/api/clean", )
+
+		// 创建文章接口
+		private.POST("/api/upload", common.Upload)
 
 		// 创建文章接口
 		private.POST("/api/article/add", as.Add)

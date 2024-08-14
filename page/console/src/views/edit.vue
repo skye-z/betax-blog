@@ -7,21 +7,24 @@
             </n-input-group>
             <n-button-group>
                 <n-button strong secondary :disabled="loading" @click="save(false)">保存</n-button>
-                <n-button strong secondary v-if="form.state == 1" :loading="loading" type="primary" @click="publish">发布文章</n-button>
-                <n-button strong secondary v-else-if="form.state == 2" :loading="loading" type="warning" @click="switchState(3)">转为私密</n-button>
-                <n-button strong secondary v-else-if="form.state == 3" :loading="loading" type="info" @click="switchState(2)">转为公开</n-button>
+                <n-button strong secondary v-if="form.state == 1" :loading="loading" type="primary"
+                    @click="publish">发布文章</n-button>
+                <n-button strong secondary v-else-if="form.state == 2" :loading="loading" type="warning"
+                    @click="switchState(3)">转为私密</n-button>
+                <n-button strong secondary v-else-if="form.state == 3" :loading="loading" type="info"
+                    @click="switchState(2)">转为公开</n-button>
             </n-button-group>
         </div>
         <div class="setting flex mb-10">
             <n-input-group class="class mr-10">
                 <n-input-group-label>分类</n-input-group-label>
-                <n-select v-model:value="form.classId" :disabled="loading" label-field="name" value-field="id" :options="classList"
-                    placeholder="请选择分类" />
+                <n-select v-model:value="form.classId" :disabled="loading" label-field="name" value-field="id"
+                    :options="classList" placeholder="请选择分类" />
             </n-input-group>
             <n-input-group class="tags">
                 <n-input-group-label>标签</n-input-group-label>
-                <n-select class="tags" v-model:value="form.tags" :disabled="loading" label-field="name" value-field="id" multiple
-                    :options="tagList" placeholder="请选择标签" />
+                <n-select class="tags" v-model:value="form.tags" :disabled="loading" label-field="name" value-field="id"
+                    multiple :options="tagList" placeholder="请选择标签" />
             </n-input-group>
         </div>
         <n-input-group class="title mb-10">
@@ -120,6 +123,7 @@ export default {
                 this.controlTimer(true)
                 return false;
             }
+            let token = localStorage.getItem("access:token");
             this.editor = new Vditor('vditor', {
                 theme: 'dark',
                 typewriterMode: true,
@@ -135,6 +139,14 @@ export default {
                         codeBlockPreview: false,
                         mathBlockPreview: false
                     }
+                },
+                upload: {
+                    url: '/api/upload',
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    },
+                    fieldName: 'files',
+                    accept: 'image/*'
                 },
                 after: () => {
                     this.editor.setValue(content)
@@ -268,7 +280,7 @@ export default {
         },
         switchState(state) {
             this.loading = true
-            article.switch(this.form.id,state).then(res => {
+            article.switch(this.form.id, state).then(res => {
                 if (res.state) {
                     window.$message.success('操作成功')
                     this.form.state = state
