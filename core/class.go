@@ -1,8 +1,6 @@
 package core
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/skye-z/betax-blog/model"
 	"github.com/skye-z/betax-blog/util"
@@ -64,9 +62,8 @@ func (service ClassService) Edit(ctx *gin.Context) {
 
 // 删除分类
 func (service ClassService) Remove(ctx *gin.Context) {
-	cache := ctx.Param("id")
-	classId, err := strconv.ParseInt(cache, 10, 64)
-	if err != nil {
+	classId := util.GetPostInt64(ctx, "id", 0)
+	if classId <= 0 {
 		util.ReturnMessage(ctx, false, "分类编号无效")
 		return
 	}

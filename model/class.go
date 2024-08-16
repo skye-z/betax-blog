@@ -4,9 +4,9 @@ import "xorm.io/xorm"
 
 // 分类模型
 type Class struct {
-	Id    int64  `json:"id"`    // 分类编号
-	Name  string `json:"name"`  // 分类名称
-	Super int64  `json:"super"` // 上级分类
+	Id    int64  `json:"id"`       // 分类编号
+	Name  string `json:"name"`     // 分类名称
+	Super int64  `json:"superior"` // 上级分类
 }
 
 type ClassData struct {
@@ -40,9 +40,14 @@ func (db ClassData) Edit(class *Class) bool {
 
 // 删除分类
 func (db ClassData) Del(id int64) bool {
+	article := &Article{Class: -1}
+	_, err := db.Engine.Where("class = ?", id).Update(article)
+	if err != nil {
+		return false
+	}
 	class := &Class{
 		Id: id,
 	}
-	_, err := db.Engine.Delete(class)
+	_, err = db.Engine.Delete(class)
 	return err == nil
 }

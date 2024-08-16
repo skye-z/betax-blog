@@ -146,4 +146,9 @@ export default {
     margin-top: 10px;
     padding: 0 20px;
 }
+
+.content img{
+    max-width: 100%;
+    margin: 0 auto;
+}
 </style>

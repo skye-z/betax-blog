@@ -31,6 +31,8 @@
                 </template>
             </n-button>
         </div>
+        <ClassEdit ref="classEdit" />
+        <TagsEdit ref="tagsEdit" />
     </div>
 </template>
 
@@ -38,6 +40,8 @@
 import { MoreHorizontal32Filled, Lightbulb24Filled, LightbulbFilament24Filled } from '@vicons/fluent'
 import { useThemeStore } from '../plugins/store'
 import { SettingFilled } from '@vicons/antd'
+import ClassEdit from './classEdit.vue'
+import TagsEdit from './tagsEdit.vue'
 
 export default {
     name: "HeadBar",
@@ -67,6 +71,11 @@ export default {
         toggleTheme() {
             const themeStore = useThemeStore();
             themeStore.toggleTheme();
+        },
+        handleSelect(e){
+            if (e == 'class') this.$refs.classEdit.open()
+            else if (e == 'tags') this.$refs.tagsEdit.open()
+            else if (e == 'file') this.$refs.classEdit.open()
         }
     }
 };

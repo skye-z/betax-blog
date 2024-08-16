@@ -146,6 +146,13 @@ func addPrivateRoute(router *gin.Engine, common *CommonService, cs *ClassService
 		// 批量更新标签接口
 		// private.POST("/api/article/update/tag", )
 
+		// 新增标签接口
+		private.POST("/api/tags/add", ts.Add)
+		// 编辑标签接口
+		private.POST("/api/tags/edit", ts.Edit)
+		// 删除标签接口
+		private.POST("/api/tags/remove", ts.Remove)
+
 		// 新增分类接口
 		private.POST("/api/class/add", cs.Add)
 		// 编辑分类接口

@@ -40,6 +40,15 @@ export const common = {
     getPing: () => get('/ping')
 }
 
+export const setting = {
+    addClass: (name, superior) => postJSON('/class/add', { name, superior }),
+    editClass: (id, name, superior) => postJSON('/class/edit', { id, name, superior }),
+    removeClass: id => post('/class/remove', { id }),
+    addTags: (name) => postJSON('/tags/add', { name }),
+    editTags: (id, name) => postJSON('/tags/edit', { id, name }),
+    removeTags: id => post('/tags/remove', { id }),
+}
+
 export const article = {
     add: (isBanner, isUp, type, title, abstract, classId, tags, content, state, releaseTime) => postJSON('/article/add', {
         isBanner, isUp, type, title, abstract, 'class': classId, tagIds: tags, content, state, releaseTime
@@ -49,9 +58,9 @@ export const article = {
     }),
     getInfo: id => get('/article/details/' + id),
     getNumber: (keyword, state) => post('/article/number', { keyword, state }),
-    getList: (keyword, state, page, number) => post('/article/list', { isBanner: 1, isUp: 1,keyword, state, page, number }),
+    getList: (keyword, state, page, number) => post('/article/list', { isBanner: 1, isUp: 1, keyword, state, page, number }),
     publish: id => post('/article/publish', { id }),
-    switch: (id,state) => post('/article/switch', { id,state }),
+    switch: (id, state) => post('/article/switch', { id, state }),
     remove: id => post('/article/remove', { id }),
     aiBuild: id => get('/article/abstract?id=' + id),
     getClass: () => get('/class'),

@@ -67,10 +67,19 @@ func (db TagData) Edit(tag *Tag) bool {
 
 // 删除标签
 func (db TagData) Del(id int64) bool {
+	// 删除标签连接
+	connect := &TagConnect{
+		Tag: id,
+	}
+	_, err := db.Engine.Delete(connect)
+	if err != nil {
+		return false
+	}
+	// 删除标签本体
 	tag := &Tag{
 		Id: id,
 	}
-	_, err := db.Engine.Delete(tag)
+	_, err = db.Engine.Delete(tag)
 	return err == nil
 }
 

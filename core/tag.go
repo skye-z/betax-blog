@@ -28,3 +28,47 @@ func (service TagService) GetList(ctx *gin.Context) {
 		util.ReturnData(ctx, true, list)
 	}
 }
+
+// 添加标签
+func (service TagService) Add(ctx *gin.Context) {
+	var tag model.Tag
+	err := ctx.Bind(&tag)
+	if err != nil {
+		util.ReturnMessage(ctx, false, "表单内容无效")
+		return
+	}
+	if service.Data.Add(&tag) {
+		util.ReturnData(ctx, true, nil)
+	} else {
+		util.ReturnMessage(ctx, false, "创建标签失败")
+	}
+}
+
+// 编辑标签
+func (service TagService) Edit(ctx *gin.Context) {
+	var tag model.Tag
+	err := ctx.Bind(&tag)
+	if err != nil {
+		util.ReturnMessage(ctx, false, "表单内容无效")
+		return
+	}
+	if service.Data.Edit(&tag) {
+		util.ReturnData(ctx, true, nil)
+	} else {
+		util.ReturnMessage(ctx, false, "编辑标签失败")
+	}
+}
+
+// 删除标签
+func (service TagService) Remove(ctx *gin.Context) {
+	tagId := util.GetPostInt64(ctx, "id", 0)
+	if tagId <= 0 {
+		util.ReturnMessage(ctx, false, "标签编号无效")
+		return
+	}
+	if service.Data.Del(tagId) {
+		util.ReturnData(ctx, true, nil)
+	} else {
+		util.ReturnMessage(ctx, false, "标签删除失败")
+	}
+}
