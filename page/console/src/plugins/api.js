@@ -58,6 +58,7 @@ export const article = {
     edit: (id, isBanner, isUp, type, title, abstract, classId, tags, content, state, releaseTime) => postJSON('/article/edit', {
         id, isBanner, isUp, type, title, abstract, 'class': classId, tagIds: tags, content, state, releaseTime
     }),
+    meta: (id, isBanner, isUp) => postJSON('/article/meta', {id, isBanner, isUp}),
     getInfo: id => get('/article/details/' + id),
     getNumber: (keyword, state) => post('/article/number', { keyword, state }),
     getList: (keyword, state, page, number) => post('/article/list', { isBanner: 1, isUp: 1, keyword, state, page, number }),

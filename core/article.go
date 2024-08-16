@@ -130,6 +130,25 @@ func (service ArticleService) Edit(ctx *gin.Context) {
 	}
 }
 
+// 编辑文章
+func (service ArticleService) EditMeta(ctx *gin.Context) {
+	var article model.Article
+	err := ctx.Bind(&article)
+	if err != nil {
+		util.ReturnMessage(ctx, false, "表单内容无效")
+		return
+	}
+	data := service.Data.Get(article.Id)
+	data.IsUp = article.IsUp
+	data.IsBanner = article.IsBanner
+	data.LastUpdateTime = time.Now().Unix() * 1000
+	if service.Data.EditMeta(data) {
+		util.ReturnData(ctx, true, nil)
+	} else {
+		util.ReturnMessage(ctx, false, "编辑文章失败")
+	}
+}
+
 // 发布文章
 func (service ArticleService) Publish(ctx *gin.Context) {
 	articleId := util.GetPostInt64(ctx, "id", 0)

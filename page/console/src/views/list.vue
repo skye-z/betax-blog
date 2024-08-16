@@ -9,22 +9,40 @@
         <div class="card mb-10 article-list">
             <div v-for="(item, index) in list" class="article-item pa-10" @click="toEdit(item.id)"
                 :class="{ 'border-top': index != 0 }">
-                <n-button-group class="float-right">
-                    <n-button quaternary circle :type="item.isUp ? 'primary':'default'">
+                <n-button-group class="float-right" v-if="item.state != 4">
+                    <n-button quaternary circle :type="item.isUp ? 'primary' : 'default'"
+                        @click.stop="switchMeta(index, item.isBanner, !item.isUp)">
                         <template #icon>
                             <n-icon>
                                 <ArrowAutofitUp24Filled />
                             </n-icon>
                         </template>
                     </n-button>
-                    <n-button quaternary circle :type="item.isBanner ? 'primary':'default'">
+                    <n-button quaternary circle :type="item.isBanner ? 'primary' : 'default'"
+                        @click.stop="switchMeta(index, !item.isBanner, item.isUp)">
                         <template #icon>
                             <n-icon>
                                 <CameraSwitch24Filled />
                             </n-icon>
                         </template>
                     </n-button>
-                    <n-button quaternary circle v-if="item.state != 4">
+                    <n-button v-if="item.state == 2" quaternary circle type="default"
+                        @click.stop="switchVisibility(index, 3)">
+                        <template #icon>
+                            <n-icon>
+                                <EyeOff24Filled />
+                            </n-icon>
+                        </template>
+                    </n-button>
+                    <n-button v-else-if="item.state == 3" quaternary circle type="default"
+                        @click.stop="switchVisibility(index, 2)">
+                        <template #icon>
+                            <n-icon>
+                                <Eye24Filled />
+                            </n-icon>
+                        </template>
+                    </n-button>
+                    <n-button quaternary circle @click.stop="remove(index)">
                         <template #icon>
                             <n-icon>
                                 <Delete16Regular />
@@ -32,6 +50,13 @@
                         </template>
                     </n-button>
                 </n-button-group>
+                <n-button v-else quaternary circle @click.stop="restore(index)">
+                    <template #icon>
+                        <n-icon>
+                            <ArrowReset24Filled />
+                        </n-icon>
+                    </template>
+                </n-button>
                 <div class="mb-5 title">{{ item.title }}</div>
                 <div class="flex align-center">
                     <n-tag class="mr-5" size="small" v-if="item.state == 1" :bordered="false">
@@ -104,12 +129,19 @@
 </template>
 
 <script>
-import { PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, PresenceOffline10Regular,ArrowAutofitUp24Filled, CameraSwitch24Filled, Delete16Regular } from '@vicons/fluent'
+import { 
+    PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, 
+    PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled, 
+    ArrowReset24Filled, Delete16Regular, Eye24Filled, EyeOff24Filled
+ } from '@vicons/fluent'
 import { article } from '../plugins/api'
 
 export default {
     name: "List",
-    components: { PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled, Delete16Regular },
+    components: { 
+        PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, 
+        PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled, 
+        ArrowReset24Filled, Delete16Regular, Eye24Filled, EyeOff24Filled },
     data: () => ({
         loading: true,
         keyword: '',
@@ -187,6 +219,68 @@ export default {
             }).catch(err => {
                 this.loading = false;
                 window.$message.warning("获取文章列表出错");
+            })
+        },
+        remove(index) {
+            let item = this.list[index]
+            window.$dialog.warning({
+                title: '操作确认',
+                content: '文章删除只是将其标记为删除, 你可以通过点击垃圾清理按钮彻底清除, 或者等待每7日自动清理, 确认要删除此文章吗?',
+                positiveText: '确认删除',
+                negativeText: '取消',
+                onPositiveClick: () => {
+                    article.remove(item.id).then(res => {
+                        if (res.state) {
+                            item.state = 4
+                            window.$message.success('文章删除成功');
+                        }
+                        else window.$message.warning('删除文章失败');
+                    }).catch(err => {
+                        window.$message.warning("发生意料之外的错误");
+                    })
+                }
+            })
+        },
+        restore(index) {
+            let item = this.list[index]
+            let state = item.releaseTime ? 3 : 1
+            article.switch(item.id, state).then(res => {
+                if (res.state) {
+                    item.state = 4
+                    window.$message.success('文章恢复成功');
+                }
+                else window.$message.warning('文章恢复失败');
+            }).catch(err => {
+                window.$message.warning("发生意料之外的错误");
+            })
+        },
+        switchVisibility(index, state) {
+            let item = this.list[index]
+            article.switch(item.id, state).then(res => {
+                if (res.state) {
+                    item.state = state
+                    window.$message.success('操作成功');
+                }
+                else window.$message.warning('操作失败');
+            }).catch(err => {
+                window.$message.warning("发生意料之外的错误");
+            })
+        },
+        switchMeta(index, isBanner, isUp) {
+            if (isBanner && isUp) {
+                window.$message.warning('置顶和轮播只能二选一哦');
+                return false
+            }
+            let item = this.list[index]
+            article.meta(item.id, isBanner, isUp).then(res => {
+                if (res.state) {
+                    item.isBanner = isBanner
+                    item.isUp = isUp
+                    window.$message.success('操作成功');
+                }
+                else window.$message.warning('操作失败');
+            }).catch(err => {
+                window.$message.warning("发生意料之外的错误");
             })
         },
         toEdit(id) {

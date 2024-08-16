@@ -41,6 +41,10 @@ export default {
     user: {}
   }),
   computed: {
+    isDark() {
+      const themeStore = useThemeStore();
+      return themeStore.isDark;
+    },
     theme() {
       const themeStore = useThemeStore();
       return themeStore.isDark ? darkTheme : lightTheme;
@@ -66,6 +70,7 @@ export default {
     }
   },
   mounted() {
+    document.body.classList.toggle('dark', this.isDark);
     this.init()
   }
 };

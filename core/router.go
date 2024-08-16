@@ -136,6 +136,8 @@ func addPrivateRoute(router *gin.Engine, common *CommonService, cs *ClassService
 		private.POST("/api/article/add", as.Add)
 		// 编辑文章接口
 		private.POST("/api/article/edit", as.Edit)
+		// 编辑文章接口
+		private.POST("/api/article/meta", as.EditMeta)
 		// 发布文章接口
 		private.POST("/api/article/publish", as.Publish)
 		// 切换状态接口

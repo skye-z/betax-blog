@@ -154,10 +154,22 @@ func (db ArticleData) Edit(article *Article) bool {
 		return false
 	}
 	_, err := db.Engine.ID(article.Id).Update(article)
+	if err != nil {
+		return false
+	}
 	tagData := &TagData{
 		Engine: db.Engine,
 	}
 	tagData.UpdateConnect(article.Id, &article.TagIds)
+	return err == nil
+}
+
+// 编辑文章
+func (db ArticleData) EditMeta(article *Article) bool {
+	if article.Id == 0 {
+		return false
+	}
+	_, err := db.Engine.ID(article.Id).Cols("is_up", "is_banner", "last_update_time").Update(article)
 	return err == nil
 }
 

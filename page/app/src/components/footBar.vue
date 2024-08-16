@@ -7,7 +7,7 @@
         <div class="ml-10">&hearts;</div>
         <div class="ml-10 mr-5">Built on <a href="https://github.com/skye-z/betax-blog" rel="noopener"
                 target="_blank"><n-button text class="text-gray">BetaX Blog</n-button></a></div>
-        <a href="/login" rel="console">
+        <a :href="login ? '/console':'/login'" rel="console">
             <n-button text class="text-gray">
                 <n-icon style="padding-top: 6px;">
                     <LoginOutlined />
@@ -28,9 +28,11 @@ export default {
         }
     },
     data: () => ({
+        login: false,
         year: '',
     }),
     mounted() {
+        this.login = localStorage.getItem('access:token') != undefined
         this.year = new Date().getFullYear();
     },
 };
