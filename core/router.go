@@ -76,20 +76,20 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	// 挂载鉴权路由
 	addOAuth2Route(router.Object)
 	// 挂载公共路由
-	addPublicRoute(router.Object, common, cs, ts, as)
+	addPublicRoute(router.Object, common, cs, ts, as, ss)
 	// 挂载私有路由
 	addPrivateRoute(router.Object, common, cs, ts, as, ss)
 	return router
 }
 
 // 挂载公共路由
-func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService, ts *TagService, as *ArticleService) {
+func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService, ts *TagService, as *ArticleService, ss *SystemService) {
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.Request.URL.Path = "/app"
 		router.HandleContext(ctx)
 	})
-	// 初始化接口(系统基础配置)
-	// router.POST("/api/init", )
+	// 初始化接口
+	router.POST("/api/install", ss.Install)
 	// 初始化接口(导航栏、页脚栏、布局信息等)
 	router.GET("/api/init", common.GetInitData)
 	// 获取博主信息
@@ -120,10 +120,12 @@ func addPrivateRoute(router *gin.Engine, common *CommonService, cs *ClassService
 	{
 		// 时间接口
 		private.GET("/api/ping", ss.Ping)
-		// 系统设置接口
-		// private.POST("/api/setting", )
+		// 获取配置
+		private.GET("/api/setting", ss.GetConfig)
+		// 更新配置
+		private.POST("/api/setting", ss.UpdateConfig)
 		// 垃圾清理接口
-		// private.POST("/api/clean", )
+		// private.POST("/api/clean")
 
 		// 创建文章接口
 		private.POST("/api/upload", common.Upload)

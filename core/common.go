@@ -26,6 +26,9 @@ type InitData struct {
 }
 
 func (cs CommonService) GetInitData(ctx *gin.Context) {
+	if util.GetInt("basic.install") == 0 {
+		util.ReturnData(ctx, false, "请完成初始化")
+	}
 	ad := &model.ArticleData{
 		Engine: cs.Engine,
 	}
