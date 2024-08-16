@@ -45,4 +45,15 @@ const router = createRouter({
     ],
 })
 
+router.beforeEach((to, _, next) => {
+    let suffix = 'Blog'
+    let cache = localStorage.getItem('cache:user');
+    if (cache != undefined) {
+        cache = JSON.parse(cache)
+        suffix = cache.nickname + ' ' + suffix
+    }
+    document.title = (to.meta.title === undefined ? '未知页面 - ' : to.meta.title + ' - ') + suffix
+    next()
+})
+
 export default router

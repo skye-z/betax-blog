@@ -87,6 +87,10 @@ body.dark {
   text-align: center;
 }
 
+.text-right{
+  text-align: right;
+}
+
 .text-gray {
   color: #999
 }
@@ -190,14 +194,27 @@ body.dark {
   padding: 20px !important;
 }
 
-.loading {
-  background-color: rgba(0, 0, 0, .3);
+.loading,
+.loading-block {
+  background-color: rgba(255, 255, 255, 0.3);
   justify-content: center;
-  position: fixed;
   display: flex;
   z-index: 999;
   height: 100%;
   width: 100%;
   left: 0;
   top: 0;
+}
+
+.loading {
+  position: fixed;
+}
+
+.loading-block{
+  position: absolute;
+}
+
+.dark .loading,
+.dark .loading-block{
+  background-color: rgba(0, 0, 0, .3);
 }

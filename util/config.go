@@ -21,6 +21,10 @@ func InitConfig() {
 	}
 }
 
+func Reload() {
+	viper.ReadInConfig()
+}
+
 func Set(key string, value interface{}) {
 	viper.Set(key, value)
 	viper.WriteConfig()

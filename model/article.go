@@ -89,6 +89,22 @@ func (db ArticleData) GetList(isBanner, isUp bool, keyword string, class, state,
 	return list, nil
 }
 
+func (db ArticleData) GetAnyList() ([]Article, error) {
+	var list []Article
+	err := db.Engine.SQL("SELECT id,type,title,abstract,class,creation_time,last_update_time,release_time,is_up FROM article ORDER BY RANDOM() LIMIT 10").Find(&list)
+	if err != nil {
+		return nil, err
+	}
+	tagData := &TagData{
+		Engine: db.Engine,
+	}
+	for i, item := range list {
+		tags, _ := tagData.GetList(item.Id)
+		(&list[i]).SetTags(tags)
+	}
+	return list, nil
+}
+
 // 获取文章数量
 func (db ArticleData) GetNumber(keyword string, state int) (int64, error) {
 	var article Article

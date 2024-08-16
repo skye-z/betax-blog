@@ -1,7 +1,7 @@
 <template>
     <div class="head-bar pa-10 flex align-center justify-between">
         <div class="flex align-center">
-            <img class="logo mr-10" src="../assets/logo.png" />
+            <a href="/"><img class="logo mr-10" src="../assets/logo.png" /></a>
             <n-button quaternary class="mr-10" @click="jump('/')">首页</n-button>
             <n-button quaternary class="mr-10" @click="jump('/list')">文章</n-button>
             <n-dropdown trigger="hover" :options="class" @select="handleSelect">
@@ -15,7 +15,7 @@
             </n-dropdown>
         </div>
         <div class="right-bar flex align-center justify-end">
-            <n-button quaternary circle class="mr-10">
+            <n-button quaternary circle class="mr-10" @click="openSetting">
                 <template #icon>
                     <n-icon>
                         <SettingFilled />
@@ -33,6 +33,7 @@
         </div>
         <ClassEdit ref="classEdit" />
         <TagsEdit ref="tagsEdit" />
+        <SystemEdit ref="systemEdit" />
     </div>
 </template>
 
@@ -40,6 +41,7 @@
 import { MoreHorizontal32Filled, Lightbulb24Filled, LightbulbFilament24Filled } from '@vicons/fluent'
 import { useThemeStore } from '../plugins/store'
 import { SettingFilled } from '@vicons/antd'
+import SystemEdit from './systemEdit.vue'
 import ClassEdit from './classEdit.vue'
 import TagsEdit from './tagsEdit.vue'
 
@@ -72,10 +74,13 @@ export default {
             const themeStore = useThemeStore();
             themeStore.toggleTheme();
         },
-        handleSelect(e){
+        handleSelect(e) {
             if (e == 'class') this.$refs.classEdit.open()
             else if (e == 'tags') this.$refs.tagsEdit.open()
             else if (e == 'file') this.$refs.classEdit.open()
+        },
+        openSetting() {
+            this.$refs.systemEdit.open()
         }
     }
 };
@@ -86,7 +91,7 @@ export default {
     color: var(--text-color-light-2);
 }
 
-.dark .head-bar{
+.dark .head-bar {
     color: var(--text-color-dark-2);
 }
 

@@ -11,9 +11,9 @@
     </n-loading-bar-provider>
     <n-scrollbar style="height: 100vh">
       <div id="app-center">
-        <head-bar :classList="classList" />
+        <head-bar v-if="!hide" :classList="classList" />
         <router-view />
-        <foot-bar :info="user" />
+        <foot-bar v-if="!hide" :info="user" />
         <n-back-top :visibility-height="370" :right="20" :bottom="20" />
       </div>
     </n-scrollbar>
@@ -37,6 +37,7 @@ export default {
       main: zhCN,
       date: dateZhCN
     },
+    hide: false,
     classList: [],
     user: {}
   }),
@@ -65,6 +66,10 @@ export default {
     },
     initClass() {
       article.getClass().then(res => {
+        if (!res.state && res.message == '请完成初始化') {
+          this.$router.replace('/install')
+          this.hide = true
+        }
         this.classList = res.state ? res.data : [];
         localStorage.setItem('cache:class', res.state ? JSON.stringify(res.data) : '[]')
       }).catch(err => {
@@ -73,6 +78,10 @@ export default {
     },
     initTags() {
       article.getTags().then(res => {
+        if (!res.state && res.message == '请完成初始化') {
+          this.$router.replace('/install')
+          this.hide = true
+        }
         localStorage.setItem('cache:tags', res.state ? JSON.stringify(res.data) : '[]')
       }).catch(err => {
         localStorage.setItem('cache:class', '[]')

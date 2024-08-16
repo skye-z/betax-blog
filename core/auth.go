@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,18 +27,26 @@ type AuthService struct {
 // 创建鉴权服务
 func NewAuthService() *AuthService {
 	as := new(AuthService)
-	as.Config = &oauth2.Config{
+	as.Config = BuildAuthConfig()
+	return as
+}
+
+func BuildAuthConfig() *oauth2.Config {
+	return &oauth2.Config{
 		ClientID:     util.GetString("github.clientId"),
 		ClientSecret: util.GetString("github.clientSecret"),
 		RedirectURL:  util.GetString("github.redirectUrl"),
 		Scopes:       []string{"user:email"},
 		Endpoint:     github.Endpoint,
 	}
-	return as
 }
 
 // 发起 OAuth2 登陆
 func (as AuthService) Login(c *gin.Context) {
+	if as.Config.ClientID == "" {
+		util.Reload()
+		as.Config = BuildAuthConfig()
+	}
 	url := as.Config.AuthCodeURL(util.GenerateRandomString(6))
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
@@ -49,7 +56,6 @@ func (as AuthService) Callback(ctx *gin.Context) {
 	code := ctx.Query("code")
 	res, err := as.Config.Exchange(ctx, code)
 	if err != nil {
-		log.Println(err)
 		// 授权服务不可用
 		ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=1")
 		return

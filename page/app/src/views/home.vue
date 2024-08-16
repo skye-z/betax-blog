@@ -4,7 +4,7 @@
             <article-banner class="mr-10" :list="banner" />
             <div class="full-width">
                 <div class="card readme mb-10 full-width">
-                    <div class="flex readme-info pa-10 border-bottom">
+                    <div class="flex readme-info pa-10 border-bottom" v-if="user.nickname">
                         <n-avatar class="readme-avatar mr-10" size="large" :src="user.avatar" />
                         <div>
                             <div class="flex align-center">
@@ -14,7 +14,10 @@
                             <div class="text-gray text-small lint1">{{ user.bio }}</div>
                         </div>
                     </div>
-                    <n-button class="full-width" quaternary @click="openGithub">
+                    <div class="bind-tips text-center border-bottom" v-else>
+                        请点击下方按钮绑定 Github 账户
+                    </div>
+                    <n-button v-if="user.nickname" class="full-width" quaternary @click="openGithub">
                         <template #icon>
                             <n-icon>
                                 <Github />
@@ -22,6 +25,16 @@
                         </template>
                         前往 Github 主页
                     </n-button>
+                    <a v-else href="/login" rel="console">
+                        <n-button class="full-width" quaternary>
+                            <template #icon>
+                                <n-icon>
+                                    <Github />
+                                </n-icon>
+                            </template>
+                            绑定账户
+                        </n-button>
+                    </a>
                 </div>
                 <div class="card tag-cloud pt-10 pl-10 full-width">
                     <n-tag class="mr-10 mb-10" v-for="(item, i) in tags" :bordered="false" type="success">
@@ -153,6 +166,10 @@ export default {
     min-width: 40px;
     width: 40px;
     height: 40px;
+}
+
+.bind-tips {
+    padding: 30px 0;
 }
 
 .tag-cloud {

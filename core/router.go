@@ -103,6 +103,8 @@ func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService,
 
 	// 文章列表接口(轮播文章列表、推荐文章列表、查询文章列表)
 	router.POST("/api/article/list", as.GetList)
+	// 文章随机列表接口
+	router.GET("/api/article/any", as.GetAnyList)
 	// 文章数量接口
 	router.POST("/api/article/number", as.GetNumber)
 	// 文章搜索接口

@@ -22,6 +22,10 @@ func CreateClassService(engine *xorm.Engine) *ClassService {
 
 // 获取分类列表
 func (service ClassService) GetList(ctx *gin.Context) {
+	if util.GetInt("basic.install") == 0 {
+		util.ReturnMessage(ctx, false, "请完成初始化")
+		return
+	}
 	list, err := service.Data.GetList()
 	if err != nil {
 		util.ReturnMessage(ctx, false, "获取分类列表失败")

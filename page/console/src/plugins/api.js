@@ -47,6 +47,8 @@ export const setting = {
     addTags: (name) => postJSON('/tags/add', { name }),
     editTags: (id, name) => postJSON('/tags/edit', { id, name }),
     removeTags: id => post('/tags/remove', { id }),
+    getConfig: () => get('/setting'),
+    updateConfig: form => postJSON('/setting', form)
 }
 
 export const article = {

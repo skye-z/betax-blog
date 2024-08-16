@@ -195,3 +195,14 @@ func (service ArticleService) Abstract(ctx *gin.Context) {
 	}
 	util.ReturnData(ctx, true, util.OpenAISingleRound(article.Content))
 }
+
+// 获取随机列表
+func (service ArticleService) GetAnyList(ctx *gin.Context) {
+	// 获取列表
+	list, err := service.Data.GetAnyList()
+	if err != nil {
+		util.ReturnMessage(ctx, false, "获取随机列表失败")
+	} else {
+		util.ReturnData(ctx, true, list)
+	}
+}

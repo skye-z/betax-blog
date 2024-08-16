@@ -96,13 +96,30 @@ func (service SystemService) Install(ctx *gin.Context) {
 		util.ReturnMessage(ctx, false, "表单内容无效")
 		return
 	}
-	util.Set("basic.sslCert", config.SSLCert)
-	util.Set("basic.sslKey", config.SSLKey)
-	util.Set("ai.secret", config.AISecret)
-	util.Set("ai.server", config.AIServer)
-	util.Set("ai.setting", config.AISetting)
-	util.Set("github.clientId", config.GithubClientId)
-	util.Set("github.clientSecret", config.GithubClientSecret)
-	util.Set("github.redirectUrl", config.GithubRedirectUrl)
+	util.Set("basic.install", 1)
+	if config.SSLCert != "" {
+		util.Set("basic.sslCert", config.SSLCert)
+	}
+	if config.SSLKey != "" {
+		util.Set("basic.sslKey", config.SSLKey)
+	}
+	if config.AISecret != "" {
+		util.Set("ai.secret", config.AISecret)
+	}
+	if config.AIServer != "" {
+		util.Set("ai.server", config.AIServer)
+	}
+	if config.AISetting != "" {
+		util.Set("ai.setting", config.AISetting)
+	}
+	if config.GithubClientId != "" {
+		util.Set("github.clientId", config.GithubClientId)
+	}
+	if config.GithubClientSecret != "" {
+		util.Set("github.clientSecret", config.GithubClientSecret)
+	}
+	if config.GithubRedirectUrl != "" {
+		util.Set("github.redirectUrl", config.GithubRedirectUrl)
+	}
 	util.ReturnData(ctx, true, "初始化成功")
 }

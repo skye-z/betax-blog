@@ -1,20 +1,7 @@
 <template>
     <div class="app-content no-select">
         <div v-if="loading" class="loading-block"><n-spin /></div>
-        <div class="mb-10 pl-10">
-            <div class="flex" v-if="classId">
-                <div class="text-gray mr-5">分类: </div>
-                <div>{{ classMapping[classId] }}</div>
-            </div>
-            <div class="flex" v-else-if="keyword">
-                <div class="text-gray mr-5">搜索: </div>
-                <div>{{ keyword }}</div>
-            </div>
-        </div>
         <article-list :list="list" />
-        <div class="text-center">
-            <n-button class="load-more" :disabled="!next" strong secondary @click="getList">加载更多</n-button>
-        </div>
     </div>
 </template>
 
@@ -23,16 +10,11 @@ import ArticleList from '../components/articleList.vue'
 import { article } from '../plugins/api'
 
 export default {
-    name: "List",
+    name: "Any",
     components: { ArticleList },
     data: () => ({
         loading: true,
-        classId: null,
-        keyword: '',
-        number: 0,
-        page: 0,
         list: [],
-        next: false,
         classMapping: {},
         tags: [],
     }),
@@ -40,19 +22,9 @@ export default {
         init() {
             this.initData()
             this.loading = true
-            let param = this.$route.query
-            if (param.class != undefined) {
-                this.classId = param.class
-                this.getList()
-            } else if (param.q != undefined) {
-                this.keyword = param.q
-                this.searchList()
-            }
+            this.getList()
         },
         initData() {
-            this.number = 20
-            this.page = 1
-            this.next = false
             this.list = []
             let cacheTags = localStorage.getItem('cache:tags');
             if (cacheTags != undefined) {
@@ -67,7 +39,7 @@ export default {
             }
         },
         getList() {
-            article.getList(true, true, this.classId, 2, this.page, this.number).then(res => {
+            article.getAnyList().then(res => {
                 if (res.state) {
                     if (res.data == null) res.data = []
                     this.next = res.data.length == this.number

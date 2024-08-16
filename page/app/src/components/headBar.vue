@@ -1,9 +1,9 @@
 <template>
     <div class="head-bar pa-10 flex align-center justify-between">
         <div class="flex align-center">
-            <img class="logo mr-10" src="../assets/logo.png" />
+            <a href="/"><img class="logo mr-10" src="../assets/logo.png" /></a>
             <n-button quaternary class="mr-10" @click="jump('/')">首页</n-button>
-            <n-button quaternary class="mr-10" @click="jump('/list')">随便看看</n-button>
+            <n-button quaternary class="mr-10" @click="jump('/any')">随便看看</n-button>
             <n-dropdown trigger="hover" :options="classList" key-field="id" label-field="name" @select="selectClass">
                 <n-button quaternary>
                     <template #icon>

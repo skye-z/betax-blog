@@ -21,6 +21,10 @@ func CreateTagService(engine *xorm.Engine) *TagService {
 }
 
 func (service TagService) GetList(ctx *gin.Context) {
+	if util.GetInt("basic.install") == 0 {
+		util.ReturnMessage(ctx, false, "请完成初始化")
+		return
+	}
 	list, err := service.Data.GetSmallList()
 	if err != nil {
 		util.ReturnMessage(ctx, false, "获取标签列表失败")

@@ -1,6 +1,7 @@
 <template>
     <div class="app-content no-select">
         <div class="card">
+            <div v-if="loading" class="loading-block"><n-spin /></div>
             <div class="title pa-10 border-bottom">
                 <div>{{ info.title }}</div>
                 <div class="flex text-small text-gray">
@@ -85,6 +86,7 @@ export default {
         initData() {
             article.getInfo(this.id).then(res => {
                 if (res.state) {
+                    document.title = res.data.title + document.title.substring(document.title.lastIndexOf(' -'))
                     res.data.content = marked(res.data.content)
                     this.info = res.data
                 }
