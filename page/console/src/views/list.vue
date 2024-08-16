@@ -1,11 +1,17 @@
 <template>
     <div class="app-content no-select">
-        <div class="loading" v-if="loading">
+        <div class="loading-block" v-if="loading">
             <n-spin />
         </div>
-        <div class="card mb-10 pa-10">
-            关键词筛选、状态筛选
-        </div>
+        <n-input-group class="title mb-10">
+            <n-input-group-label>关键词</n-input-group-label>
+            <n-input v-model:value="keyword" type="text" placeholder="你在找些什么呢?" />
+            <n-input-group-label>状态</n-input-group-label>
+            <n-select v-model:value="state" label-field="name" value-field="id" style="width: 130px;" :options="states"
+                placeholder="筛选状态" />
+            <n-button strong secondary type="primary" @click="getNumber">筛选</n-button>
+            <n-button strong secondary @click="clean">清除</n-button>
+        </n-input-group>
         <div class="card mb-10 article-list">
             <div v-for="(item, index) in list" class="article-item pa-10" @click="toEdit(item.id)"
                 :class="{ 'border-top': index != 0 }">
@@ -50,7 +56,7 @@
                         </template>
                     </n-button>
                 </n-button-group>
-                <n-button v-else quaternary circle @click.stop="restore(index)">
+                <n-button class="float-right" v-else quaternary circle @click.stop="restore(index)">
                     <template #icon>
                         <n-icon>
                             <ArrowReset24Filled />
@@ -129,23 +135,31 @@
 </template>
 
 <script>
-import { 
-    PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, 
-    PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled, 
+import {
+    PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled,
+    PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled,
     ArrowReset24Filled, Delete16Regular, Eye24Filled, EyeOff24Filled
- } from '@vicons/fluent'
+} from '@vicons/fluent'
 import { article } from '../plugins/api'
 
 export default {
     name: "List",
-    components: { 
-        PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled, 
-        PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled, 
-        ArrowReset24Filled, Delete16Regular, Eye24Filled, EyeOff24Filled },
+    components: {
+        PresenceAway10Filled, PresenceAvailable10Filled, PresenceDnd10Filled,
+        PresenceOffline10Regular, ArrowAutofitUp24Filled, CameraSwitch24Filled,
+        ArrowReset24Filled, Delete16Regular, Eye24Filled, EyeOff24Filled
+    },
     data: () => ({
         loading: true,
         keyword: '',
         state: 0,
+        states: [
+            { id: 0, name: '全部' },
+            { id: 1, name: '草稿' },
+            { id: 2, name: '公开' },
+            { id: 3, name: '私密' },
+            { id: 4, name: '删除' },
+        ],
         number: 20,
         count: 0,
         page: 1,
@@ -190,6 +204,11 @@ export default {
             }).catch(err => {
                 window.$message.warning("发生意料之外的错误");
             })
+        },
+        clean(){
+            this.keyword = ''
+            this.state = 0
+            this.getNumber()
         },
         getNumber() {
             this.loading = true;
@@ -246,7 +265,7 @@ export default {
             let state = item.releaseTime ? 3 : 1
             article.switch(item.id, state).then(res => {
                 if (res.state) {
-                    item.state = 4
+                    item.state = state
                     window.$message.success('文章恢复成功');
                 }
                 else window.$message.warning('文章恢复失败');

@@ -40,7 +40,10 @@
             </n-button>
         </n-input-group>
         <div id="vditor" class="mb-10">
-            <div class="tips">编辑器初始化中...</div>
+            <div class="tips">
+                <n-spin clss="mb-10" :size="78" :stroke-width="24" />
+                <div>编辑器初始化中...</div>
+            </div>
         </div>
         <div class="text-center text-gray">
             <span>上次保存: </span>
@@ -355,7 +358,7 @@ export default {
 
 #vditor .tips {
     text-align: center;
-    font-size: 32px;
+    font-size: 24px;
     padding: 100px;
 }
 

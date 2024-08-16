@@ -2,10 +2,12 @@
     <div class="app-content no-select">
         <div class="head-bar flex mb-10">
             <div class="card tips mr-10">
-                <div class="float-right pa-10">中午好呀 {{ user.nickname }} 😊</div>
-                <div class="text-gray text-small pa-10 border-bottom">2024年08月02日 11:20</div>
+                <div class="float-right pa-10">{{ tips }}好呀 {{ user.nickname }} 😊</div>
+                <div class="text-gray text-small pa-10 border-bottom">
+                    <n-time :time="now" />
+                </div>
                 <div class="pa-10">
-                    <div>本周你已经写了3片文章了, 今天要不再写点什么?</div>
+                    <div>欢迎回来, 今天要不写点什么?</div>
                 </div>
             </div>
             <div class="card readme full-width">
@@ -45,6 +47,8 @@ export default {
     name: "Home",
     components: { Github, Linkedin, QqOutlined, Discord },
     data: () => ({
+        now: 0,
+        tips: '',
         note: '',
         submit: false,
         user: {}
@@ -55,6 +59,7 @@ export default {
             if (user != undefined) {
                 this.user = JSON.parse(user)
             }
+            this.initTimePeriod()
         },
         jump(path) {
             this.$router.push(path)
@@ -85,9 +90,21 @@ export default {
                     })
                 },
             });
+        },
+        initTimePeriod() {
+            const currentHour = new Date().getHours();
+            if (currentHour >= 5 && currentHour < 11) 
+                this.tips = '早上';
+             else if (currentHour >= 11 && currentHour < 13) 
+                this.tips = '中午';
+             else if (currentHour >= 13 && currentHour < 18) 
+                this.tips = '下午';
+             else 
+                this.tips = '晚上'
         }
     },
     mounted() {
+        this.now = new Date().getTime()
         this.init()
     },
 };
