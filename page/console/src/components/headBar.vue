@@ -34,6 +34,7 @@
         <ClassEdit ref="classEdit" />
         <TagsEdit ref="tagsEdit" />
         <SystemEdit ref="systemEdit" />
+        <FilesEdit ref="filesEdit" />
     </div>
 </template>
 
@@ -42,6 +43,7 @@ import { MoreHorizontal32Filled, Lightbulb24Filled, LightbulbFilament24Filled } 
 import { useThemeStore } from '../plugins/store'
 import { SettingFilled } from '@vicons/antd'
 import SystemEdit from './systemEdit.vue'
+import FilesEdit from './filesEdit.vue'
 import ClassEdit from './classEdit.vue'
 import TagsEdit from './tagsEdit.vue'
 
@@ -77,7 +79,7 @@ export default {
         handleSelect(e) {
             if (e == 'class') this.$refs.classEdit.open()
             else if (e == 'tags') this.$refs.tagsEdit.open()
-            else if (e == 'file') this.$refs.classEdit.open()
+            else if (e == 'file') this.$refs.filesEdit.open()
         },
         openSetting() {
             this.$refs.systemEdit.open()

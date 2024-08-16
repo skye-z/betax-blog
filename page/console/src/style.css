@@ -38,6 +38,7 @@ body {
 }
 
 .app-content {
+  min-height: calc(100vh - 121px);
   position: relative;
   max-width: 890px;
   padding: 0 10px;
@@ -67,12 +68,28 @@ body.dark {
   border-bottom: 1px solid #d7d7d7;
 }
 
+.border-left {
+  border-left: 1px solid #d7d7d7;
+}
+
+.border-right {
+  border-right: 1px solid #d7d7d7;
+}
+
 .dark .border-top {
   border-top: 1px solid #343434;
 }
 
 .dark .border-bottom {
   border-bottom: 1px solid #343434;
+}
+
+.dark .border-left {
+  border-left: 1px solid #343434;
+}
+
+.dark .border-right {
+  border-right: 1px solid #343434;
 }
 
 .no-select {
@@ -214,4 +231,8 @@ body.dark {
 .dark .loading,
 .dark .loading-block{
   background-color: rgba(0, 0, 0, .3);
+}
+
+.file-box .n-drawer-body-content-wrapper{
+  padding: 0 !important;
 }

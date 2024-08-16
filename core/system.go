@@ -1,6 +1,11 @@
 package core
 
 import (
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/skye-z/betax-blog/util"
 )
@@ -29,10 +34,12 @@ type SystemConfig struct {
 	GithubRedirectUrl  string `json:"githubRedirectUrl"`  // github.redirectUrl
 }
 
+// 获取配置
 func (service SystemService) GetConfig(ctx *gin.Context) {
 	util.ReturnData(ctx, true, service.getConfig())
 }
 
+// 获取配置
 func (service SystemService) getConfig() *SystemConfig {
 	config := &SystemConfig{
 		Install:            util.GetInt("basic.install"),
@@ -85,7 +92,7 @@ func (service SystemService) UpdateConfig(ctx *gin.Context) {
 	util.ReturnMessage(ctx, true, "")
 }
 
-// 更新配置
+// 初始化配置
 func (service SystemService) Install(ctx *gin.Context) {
 	if util.GetInt("basic.install") == 1 {
 		util.ReturnData(ctx, true, "已初始化完成")
@@ -122,4 +129,52 @@ func (service SystemService) Install(ctx *gin.Context) {
 		util.Set("github.redirectUrl", config.GithubRedirectUrl)
 	}
 	util.ReturnData(ctx, true, "初始化成功")
+}
+
+type FileInfo struct {
+	Name     string `json:"name"`
+	Size     int64  `json:"size"`
+	Modified int64  `json:"time"`
+}
+
+func (service SystemService) GetFileList(ctx *gin.Context) {
+	var files []FileInfo
+
+	err := filepath.Walk("./res", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			if !strings.HasSuffix(info.Name(), ".jpg") {
+				return nil
+			}
+			files = append(files, FileInfo{
+				Name:     info.Name(),
+				Size:     info.Size(),
+				Modified: info.ModTime().Unix() * 1000,
+			})
+		}
+		return nil
+	})
+
+	if err != nil {
+		util.ReturnMessage(ctx, false, "获取文件列表失败")
+	} else {
+		util.ReturnData(ctx, true, files)
+	}
+}
+
+func (service SystemService) RemoveFile(ctx *gin.Context) {
+	name := ctx.PostForm("name")
+	if len(name) != 36 {
+		util.ReturnMessage(ctx, false, "文件不存在")
+		return
+	}
+	err := os.Remove("./res/" + name)
+	if err == nil {
+		util.ReturnMessage(ctx, true, "删除成功")
+	} else {
+		log.Println(err)
+		util.ReturnMessage(ctx, false, "文件删除失败")
+	}
 }

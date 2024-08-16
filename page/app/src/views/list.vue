@@ -6,14 +6,21 @@
                 <div class="text-gray mr-5">分类: </div>
                 <div>{{ classMapping[classId] }}</div>
             </div>
+            <div class="flex" v-else-if="tagId">
+                <div class="text-gray mr-5">标签: </div>
+                <div>{{ tagsMapping[tagId] }}</div>
+            </div>
             <div class="flex" v-else-if="keyword">
                 <div class="text-gray mr-5">搜索: </div>
                 <div>{{ keyword }}</div>
             </div>
         </div>
         <article-list :list="list" />
-        <div class="text-center">
+        <div class="text-center" v-if="list.length > 0">
             <n-button class="load-more" :disabled="!next" strong secondary @click="getList">加载更多</n-button>
+        </div>
+        <div class="none" v-if="!loading && list.length == 0">
+            没有相关文章
         </div>
     </div>
 </template>
@@ -28,13 +35,14 @@ export default {
     data: () => ({
         loading: true,
         classId: null,
+        tagId: null,
         keyword: '',
         number: 0,
         page: 0,
         list: [],
         next: false,
         classMapping: {},
-        tags: [],
+        tagsMapping: [],
     }),
     methods: {
         init() {
@@ -43,6 +51,9 @@ export default {
             let param = this.$route.query
             if (param.class != undefined) {
                 this.classId = param.class
+                this.getList()
+            } else if (param.tag != undefined) {
+                this.tagId = param.tag
                 this.getList()
             } else if (param.q != undefined) {
                 this.keyword = param.q
@@ -56,7 +67,10 @@ export default {
             this.list = []
             let cacheTags = localStorage.getItem('cache:tags');
             if (cacheTags != undefined) {
-                this.tops = JSON.parse(cacheTags)
+                cacheTags = JSON.parse(cacheTags)
+                for (let i in cacheTags) {
+                    this.tagsMapping[cacheTags[i].id] = cacheTags[i].name
+                }
             }
             let cacheClass = localStorage.getItem('cache:class');
             if (cacheClass != undefined) {
@@ -67,12 +81,13 @@ export default {
             }
         },
         getList() {
-            article.getList(true, true, this.classId, 2, this.page, this.number).then(res => {
+            article.getList(true, true, this.classId, this.tagId, 2, this.page, this.number).then(res => {
                 if (res.state) {
                     if (res.data == null) res.data = []
                     this.next = res.data.length == this.number
                     if (res.data.length == 0) {
                         window.$message.warning('已经到底啦');
+                        this.loading = false;
                         return false;
                     }
                     for (let i in res.data) {
@@ -118,5 +133,12 @@ export default {
 <style scoped>
 .load-more {
     width: 40%;
+}
+
+.none{
+    text-align: center;
+    padding: calc(50vh - 102px) 0;
+    font-size: 32px;
+    color: var(--text-color-light-2);
 }
 </style>

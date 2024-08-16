@@ -37,7 +37,7 @@
                     </a>
                 </div>
                 <div class="card tag-cloud pt-10 pl-10 full-width">
-                    <n-tag class="mr-10 mb-10" v-for="(item, i) in tags" :bordered="false" type="success">
+                    <n-tag class="tag-item mr-10 mb-10" v-for="item in tags" :bordered="false" type="success" @click="openTag(item.id)">
                         {{ item.name }}
                     </n-tag>
                 </div>
@@ -101,7 +101,7 @@ export default {
             })
         },
         getList(isBanner, isUp) {
-            article.getList(isBanner, isUp, -1, 2, this.page, this.number).then(res => {
+            article.getList(isBanner, isUp, -1, -1, 2, this.page, this.number).then(res => {
                 if (res.state) {
                     this.buildList(res.data)
                     this.loading = false;
@@ -137,6 +137,9 @@ export default {
         },
         open(id) {
             this.$router.push('/info/' + id)
+        },
+        openTag(id){
+            this.$router.push('/list?tag='+id)
         },
         openGithub() {
             window.open('https://github.com/' + this.user.username)
@@ -174,6 +177,14 @@ export default {
 
 .tag-cloud {
     height: 172px;
+}
+
+.tag-item{
+    cursor: pointer;
+}
+
+.article-box{
+    min-height: calc(100vh - 431px);
 }
 
 .article-list {

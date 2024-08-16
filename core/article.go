@@ -31,6 +31,8 @@ func (service ArticleService) GetList(ctx *gin.Context) {
 	isUp := util.GetPostBool(ctx, "isUp", false)
 	// 筛选关键词
 	keyword := ctx.PostForm("keyword")
+	// 文章标签
+	tag := util.GetPostInt(ctx, "tag", -1)
 	// 文章分类
 	class := util.GetPostInt(ctx, "class", -1)
 	// 文章状态
@@ -39,8 +41,14 @@ func (service ArticleService) GetList(ctx *gin.Context) {
 	page := util.GetPostInt(ctx, "page", 1)
 	// 数量
 	num := util.GetPostInt(ctx, "number", 20)
+	var err error
+	var list []model.Article
 	// 获取列表
-	list, err := service.Data.GetList(isBanner, isUp, keyword, class, state, page, num)
+	if tag == -1 {
+		list, err = service.Data.GetList(isBanner, isUp, keyword, class, state, page, num)
+	} else {
+		list, err = service.Data.GetListByTag(tag, page, num)
+	}
 	if err != nil {
 		util.ReturnMessage(ctx, false, "获取文章列表失败")
 	} else {

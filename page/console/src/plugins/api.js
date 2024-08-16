@@ -37,7 +37,9 @@ function get(url) {
 export const common = {
     init: () => get('/init'),
     getUser: () => get('/user'),
-    getPing: () => get('/ping')
+    getPing: () => get('/ping'),
+    getFiles: () => get('/file/list'),
+    removeFile: name => post('/file/remove', {name})
 }
 
 export const setting = {

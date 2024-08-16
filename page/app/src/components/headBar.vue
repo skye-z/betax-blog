@@ -14,13 +14,7 @@
                 </n-button>
             </n-dropdown>
         </div>
-        <n-input class="search" v-model:value="keyword" round placeholder="搜索文章" @keyup.enter="search">
-            <template #prefix>
-                <n-icon>
-                    <Search24Filled />
-                </n-icon>
-            </template>
-        </n-input>
+        <n-input class="search" v-model:value="keyword" round placeholder="搜索文章" @keyup.enter="search" />
         <div class="right-bar flex align-center justify-end">
             <n-button quaternary circle @click="toggleTheme">
                 <template #icon>

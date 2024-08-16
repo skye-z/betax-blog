@@ -89,6 +89,24 @@ func (db ArticleData) GetList(isBanner, isUp bool, keyword string, class, state,
 	return list, nil
 }
 
+// 获取文章列表
+func (db ArticleData) GetListByTag(tag, page, num int) ([]Article, error) {
+	var list []Article
+	err := db.Engine.Table("article").Join("LEFT", "tag_connect", "article.id = tag_connect.article").
+		Omit("content").Where("tag_connect.tag = ?", tag).Desc("weight", "creation_time", "release_time").Limit(num, (page-1)*num).Find(&list)
+	if err != nil {
+		return nil, err
+	}
+	tagData := &TagData{
+		Engine: db.Engine,
+	}
+	for i, item := range list {
+		tags, _ := tagData.GetList(item.Id)
+		(&list[i]).SetTags(tags)
+	}
+	return list, nil
+}
+
 func (db ArticleData) GetAnyList() ([]Article, error) {
 	var list []Article
 	err := db.Engine.SQL("SELECT id,type,title,abstract,class,creation_time,last_update_time,release_time,is_up FROM article ORDER BY RANDOM() LIMIT 10").Find(&list)

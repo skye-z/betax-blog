@@ -363,6 +363,10 @@ export default {
 }
 
 .tags:deep(.n-tag) {
+    background-color: var(--color-light-3);
+}
+
+.dark .tags:deep(.n-tag) {
     background-color: var(--color-dark-3);
 }
 

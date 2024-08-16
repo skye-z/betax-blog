@@ -131,6 +131,10 @@ func addPrivateRoute(router *gin.Engine, common *CommonService, cs *ClassService
 
 		// 创建文章接口
 		private.POST("/api/upload", common.Upload)
+		// 获取文件列表接口
+		private.GET("/api/file/list", ss.GetFileList)
+		// 获取文件列表接口
+		private.POST("/api/file/remove", ss.RemoveFile)
 
 		// 创建文章接口
 		private.POST("/api/article/add", as.Add)
