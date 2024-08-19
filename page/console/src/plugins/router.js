@@ -50,8 +50,9 @@ router.beforeEach((to, _, next) => {
     let cache = localStorage.getItem('cache:user');
     if (cache != undefined) {
         cache = JSON.parse(cache)
-        suffix = cache.nickname + ' ' + suffix
-    }
+        if (cache.nickname) suffix = cache.nickname + ' ' + suffix
+        else suffix = 'BetaX ' + suffix
+    } else suffix = 'BetaX ' + suffix
     document.title = (to.meta.title === undefined ? '未知页面 - ' : to.meta.title + ' - ') + suffix
     next()
 })
