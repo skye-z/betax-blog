@@ -76,7 +76,7 @@ export default {
                 negativeText: "取消",
                 onPositiveClick: () => {
                     this.submit = true
-                    article.add(false, false, 1, '随手记 #' + new Date().getTime(), "", 0, null, this.note, 1, null).then(res => {
+                    article.add(false, false, 1, '随手记 #' + new Date().getTime(), "", 1, null, this.note, 1, null).then(res => {
                         if (res.state) {
                             this.note = ''
                             window.$message.success('保存成功')

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/gin-contrib/gzip"
@@ -186,14 +187,17 @@ func (r Router) Run() {
 	util.OutLogf(MODEL_NAME, "starting the router from port "+r.port)
 	// 启动服务
 	go func() {
+		var err error
 		if r.cert == "" {
-			if err := r.Object.Run(":" + r.port); err != nil {
-				util.OutErr(MODEL_NAME, "router startup failed: %v", err)
-			}
+			err = r.Object.Run(":" + r.port)
 		} else {
-			if err := r.Object.RunTLS(":"+r.port, r.cert, r.key); err != nil {
-				util.OutErr(MODEL_NAME, "router startup failed: %v", err)
+			err = r.Object.RunTLS(":"+r.port, r.cert, r.key)
+		}
+		if err != nil {
+			if strings.Contains(err.Error(), "address already in use") {
+				util.OutLogf(MODEL_NAME, "please add '--port=' after start command to change the port")
 			}
+			util.OutErr(MODEL_NAME, "router startup failed: %v", err)
 		}
 	}()
 	util.OutLog(MODEL_NAME, "router is ready")

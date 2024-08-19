@@ -14,5 +14,5 @@ func OutLogf(module, format string, v ...any) {
 }
 
 func OutErr(module, format string, v ...any) {
-	log.Fatalf("["+module+"]", fmt.Sprintf(format, v...))
+	log.Fatalf("["+module+"] "+format, v...)
 }

@@ -190,6 +190,8 @@ export default {
         },
         aiBuild() {
             this.save(true)
+            if (this.form.id == 0) this.form.id = parseInt(this.$route.params.id);
+            if (this.form.id == 0) return false
             this.ai = true
             article.aiBuild(this.form.id).then(res => {
                 if (res.state) this.form.abstract = res.data
@@ -218,7 +220,7 @@ export default {
             if (title.trim().length == 0) title = '草稿 #' + new Date().getTime()
             // 检查分类
             let classId = this.form.classId;
-            if (classId == null) classId = 0;
+            if (classId == null) classId = 1;
             if (this.model == 'add') this.addArticle({
                 title, content, classId,
                 isBanner: this.form.isBanner,

@@ -89,7 +89,7 @@ body.dark {
   text-align: center;
 }
 
-.text-right{
+.text-right {
   text-align: right;
 }
 
@@ -212,26 +212,34 @@ body.dark {
   position: fixed;
 }
 
-.loading-block{
+.loading-block {
   position: absolute;
 }
 
 .dark .loading,
-.dark .loading-block{
+.dark .loading-block {
   background-color: rgba(0, 0, 0, .3);
 }
 
-.content img{
-    max-width: 100%;
-    margin: 0 auto;
+.content img {
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-.n-carousel__arrow{
+.n-carousel__arrow {
   background-color: rgba(196, 196, 196, .2) !important;
   color: var(--text-color-light-2) !important;
 }
 
-.dark .n-carousel__arrow{
+.dark .n-carousel__arrow {
   background-color: rgba(255, 255, 255, .2) !important;
   color: var(--text-color-dark-1) !important;
+}
+
+code {
+  background-color: #999999;
+  padding: 3px;
+  border-radius: 5px;
+  color: #f4f4f4;
+  margin: 0 2px;
 }
