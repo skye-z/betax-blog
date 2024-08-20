@@ -23,6 +23,7 @@ func main() {
 	port := flag.Int("port", 9800, "the port to listen on")
 	// 解析命令行参数
 	flag.Parse()
+	util.Sync()
 	// 初始化路由器
 	router := core.BuildRouter(!*debug, *port, "0.0.0.0", "", "", engine, page)
 	router.Run()

@@ -67,6 +67,10 @@ func createDefault() {
 	viper.SetDefault("github.clientSecret", "")
 	viper.SetDefault("github.redirectUrl", "")
 	viper.SetDefault("github.bind", "")
+	// 同步
+	viper.SetDefault("sync.path", "")
+	viper.SetDefault("sync.username", "")
+	viper.SetDefault("sync.password", "")
 	// 令牌密钥
 	secret, err := generateSecret()
 	if err != nil {

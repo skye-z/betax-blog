@@ -6,6 +6,7 @@ page/app_dist
 page/console_dist
 auto-imports.d.ts
 components.d.ts
+.synclog
 res/
 out/
 # 测试文件
