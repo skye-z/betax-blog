@@ -5,16 +5,12 @@ echo "Start packaging..."
 go mod download
 go mod tidy
 
+rm -rf ./out
 mkdir ./out
-cp LICENSE ./out/LICENSE
 
 generate(){
-    CGO_ENABLED=0 GOOS=$1 GOARCH=$2 go build -o betax-blog -ldflags '-s -w'
-    mv betax-blog ./out/betax-blog-$2-$1
-    cd out
-    tar -zcf betax-blog-$2-$1.tar.gz betax-blog-$2-$1 LICENSE
-    rm -rf ./betax-blog-$2-$1
-    cd ../
+    CGO_ENABLED=0 GOOS=$1 GOARCH=$2 go build -o betax-blog_$1_$2 -ldflags '-s -w'
+    mv betax-blog_$1_$2 ./out/
 }
 
 echo "[1] Linux from amd64"

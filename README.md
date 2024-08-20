@@ -24,7 +24,6 @@ BetaX Blog is an open-source, dynamic blogging platform written in Go. Its light
 
 - **linux**: Currently only supports Linux systems
 - **curl**: Used for downloading installation packages
-- **tar**: Used to decompress installation packages
 
 #### Quick Start
 

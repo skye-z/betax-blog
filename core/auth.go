@@ -98,6 +98,7 @@ type User struct {
 	Nickname string `json:"nickname"`
 	Username string `json:"username"`
 	Bio      string `json:"bio"`
+	Version  string `json:"version"`
 }
 
 // 查询 OAuth2 用户信息

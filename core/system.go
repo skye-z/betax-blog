@@ -3,20 +3,32 @@ package core
 import (
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/skye-z/betax-blog/util"
+	githubreleases "github.com/skye-z/github-releases"
 )
 
 type SystemService struct {
+	Version *githubreleases.Versioning
 }
 
 func CreateSystemService() *SystemService {
-	return &SystemService{}
+	ss := new(SystemService)
+	ss.Version = &githubreleases.Versioning{
+		Author: "skye-z",
+		Store:  "betax-blog",
+		Name:   "betax-blog",
+		Cmd:    exec.Command("systemctl", "restart", "betax-blog"),
+		Proxy:  "https://mirror.ghproxy.com/",
+	}
+	return ss
 }
 
+// 连通性测试
 func (service SystemService) Ping(ctx *gin.Context) {
 	util.ReturnMessage(ctx, true, "延迟测试")
 }
@@ -137,6 +149,7 @@ type FileInfo struct {
 	Modified int64  `json:"time"`
 }
 
+// 获取文件列表
 func (service SystemService) GetFileList(ctx *gin.Context) {
 	var files []FileInfo
 
@@ -164,6 +177,7 @@ func (service SystemService) GetFileList(ctx *gin.Context) {
 	}
 }
 
+// 删除文件
 func (service SystemService) RemoveFile(ctx *gin.Context) {
 	name := ctx.PostForm("name")
 	if len(name) != 36 {
@@ -176,5 +190,26 @@ func (service SystemService) RemoveFile(ctx *gin.Context) {
 	} else {
 		log.Println(err)
 		util.ReturnMessage(ctx, false, "文件删除失败")
+	}
+}
+
+// 获取最新版本
+func (service SystemService) GetNewVersion(ctx *gin.Context) {
+	info := service.Version.GetLatestReleaseVersion()
+	if info == nil {
+		util.ReturnMessage(ctx, false, "获取版本信息失败")
+	} else {
+		util.ReturnData(ctx, true, info)
+	}
+}
+
+// 更新版本
+func (service SystemService) UpdateNewVersion(ctx *gin.Context) {
+	state := service.Version.DownloadNewVersion()
+	if state {
+		util.ReturnMessage(ctx, true, "更新成功")
+		service.Version.RestartWithSystemd()
+	} else {
+		util.ReturnMessage(ctx, false, "更新失败")
 	}
 }

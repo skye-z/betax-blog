@@ -53,6 +53,7 @@ func (cs CommonService) GetUserInfo(ctx *gin.Context) {
 			util.ReturnMessage(ctx, false, "获取博主信息失败")
 		} else {
 			checkUser.Id = ""
+			checkUser.Version = util.Version
 			util.ReturnData(ctx, true, checkUser)
 		}
 	} else {

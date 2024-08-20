@@ -50,7 +50,9 @@ export const setting = {
     editTags: (id, name) => postJSON('/tags/edit', { id, name }),
     removeTags: id => post('/tags/remove', { id }),
     getConfig: () => get('/setting'),
-    updateConfig: form => postJSON('/setting', form)
+    updateConfig: form => postJSON('/setting', form),
+    checkVersion: () => get('/version'),
+    updateVersion: () => get('/version/update'),
 }
 
 export const article = {

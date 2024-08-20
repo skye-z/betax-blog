@@ -127,6 +127,10 @@ func addPrivateRoute(router *gin.Engine, common *CommonService, cs *ClassService
 		private.GET("/api/setting", ss.GetConfig)
 		// 更新配置
 		private.POST("/api/setting", ss.UpdateConfig)
+		// 检查更新
+		private.GET("/api/version", ss.GetNewVersion)
+		// 更新版本
+		private.GET("/api/version/update", ss.UpdateNewVersion)
 		// 垃圾清理接口
 		// private.POST("/api/clean")
 

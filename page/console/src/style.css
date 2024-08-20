@@ -236,3 +236,7 @@ body.dark {
 .file-box .n-drawer-body-content-wrapper{
   padding: 0 !important;
 }
+
+.n-dialog .n-dialog__content{
+  white-space: pre;
+}

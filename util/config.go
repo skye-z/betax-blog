@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const Version = "0.2.0"
+
 func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("ini")
