@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -204,6 +205,17 @@ func (r Router) Run() {
 			util.OutErr(MODEL_NAME, "router startup failed: %v", err)
 		}
 	}()
+
+	// 添加定时任务
+	go func() {
+		ticker := time.NewTicker(4 * time.Hour) // 每4小时执行一次
+		defer ticker.Stop()
+
+		for ; true; <-ticker.C {
+			util.Sync()
+		}
+	}()
+
 	util.OutLog(MODEL_NAME, "router is ready")
 	// 等待中断信号
 	r.wait()

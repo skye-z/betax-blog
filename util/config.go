@@ -68,6 +68,7 @@ func createDefault() {
 	viper.SetDefault("github.redirectUrl", "")
 	viper.SetDefault("github.bind", "")
 	// 同步
+	viper.SetDefault("sync.enable", "false")
 	viper.SetDefault("sync.path", "")
 	viper.SetDefault("sync.username", "")
 	viper.SetDefault("sync.password", "")
