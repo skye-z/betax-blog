@@ -1,3 +1,10 @@
+/*
+数据库工具
+
+BetaX Blog
+Copyright © 2024 SkyeZhang <skai-zhang@hotmail.com>
+*/
+
 package util
 
 import (

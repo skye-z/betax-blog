@@ -1,8 +1,15 @@
+/*
+配置工具
+
+BetaX Blog
+Copyright © 2024 SkyeZhang <skai-zhang@hotmail.com>
+*/
+
 package util
 
 import (
+	"crypto/rand"
 	"encoding/base64"
-	"math/rand"
 
 	"github.com/spf13/viper"
 )

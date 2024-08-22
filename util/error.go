@@ -1,7 +1,7 @@
 /*
 公共错误工具
 
-BetaX Harbor
+BetaX Blog
 Copyright © 2024 SkyeZhang <skai-zhang@hotmail.com>
 */
 

@@ -15,6 +15,7 @@ BetaX Blog is an open-source, dynamic blogging platform written in Go. Its light
 - **⏫ Image Upload**: Directly upload images to your posts.
 - **🧠 AI Summarization**: Automatically generate summaries for your articles using AI.
 - **🔗 GitHub Integration**: Authenticate users via GitHub for seamless login and user management.
+- **☁️ WebDAV Synchronization**: Supports synchronization of database and resource files via WebDAV every 4 hours.
 
 ## Getting Started
 
