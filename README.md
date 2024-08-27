@@ -6,7 +6,13 @@
 
 ## Introduction
 
-BetaX Blog is an open-source, dynamic blogging platform written in Go. Its lightweight design makes it ideal for personal blogs or small communities. The entire application is packaged into a single binary that weighs only 17MB, ensuring quick deployment and minimal resource usage.
+BetaX Blog is an open-source, dynamic blogging platform written in Go. Its lightweight design makes it ideal for personal blogs or small communities.
+
+The entire application is packaged into a single binary that weighs only 17MB, ensuring quick deployment and minimal resource usage.
+
+At the same time using interface data caching and PWA technology (need to configure HTTPS) to improve access speed and reduce resource overhead.
+
+However, BetaX Blog is still a dynamic blog, for higher performance and efficiency, please deploy with CDN.
 
 ## Features
 
