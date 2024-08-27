@@ -8,7 +8,14 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: '../console_dist'
+    outDir: '../console_dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          icon: ['@vicons/antd', '@vicons/fa']
+        }
+      }
+    }
   },
   plugins: [
     vue(), AutoImport({

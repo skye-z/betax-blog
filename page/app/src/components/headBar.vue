@@ -81,6 +81,7 @@ export default {
 
 .logo {
     width: 48px;
+    border-radius: 25px;
 }
 
 .search {

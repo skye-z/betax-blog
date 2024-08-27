@@ -17,6 +17,7 @@ export default {
     }),
     methods: {
         init() {
+            console.log('[Auth] login...')
             let query = this.$route.query;
             this.state = query.state;
             if (query.state == 9) {

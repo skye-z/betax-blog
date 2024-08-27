@@ -19,6 +19,42 @@ type CommonService struct {
 	Engine *xorm.Engine
 }
 
+func (cs CommonService) GetWebManifest(ctx *gin.Context) {
+	check := util.GetString("github.bind")
+	if check != "" {
+		var checkUser User
+		err := json.Unmarshal([]byte(check), &checkUser)
+		if err != nil {
+			util.ReturnMessage(ctx, false, "获取博主信息失败")
+		} else {
+			manifest := map[string]interface{}{
+				"name":             checkUser.Nickname + " Blog",
+				"short_name":       checkUser.Nickname + " Blog",
+				"start_url":        "/app/",
+				"display":          "standalone",
+				"background_color": "#F5F7F9",
+				"lang":             "en",
+				"scope":            "/app/",
+				"description":      checkUser.Bio,
+				"theme_color":      "#f5f7f9",
+				"icons": []map[string]string{
+					{"src": "/app/res/pwa-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+					{"src": "/app/res/pwa-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+					{"src": "/app/res/pwa-maskable-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+					{"src": "/app/res/pwa-maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+				},
+			}
+			if checkUser.Bio == "" {
+				manifest["description"] = "This is " + checkUser.Nickname + "`s Blog"
+			}
+			ctx.Header("Content-Type", "application/manifest+json")
+			ctx.JSON(200, manifest)
+		}
+	} else {
+		util.ReturnMessage(ctx, false, "系统尚未初始化")
+	}
+}
+
 type InitData struct {
 	Banner []model.Article `json:"banner"`
 	Up     []model.Article `json:"up"`

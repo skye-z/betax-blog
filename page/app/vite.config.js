@@ -8,7 +8,14 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: '../app_dist'
+    outDir: '../app_dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          icon: ['@vicons/antd', '@vicons/fa']
+        }
+      }
+    }
   },
   plugins: [
     vue(), AutoImport({
@@ -33,40 +40,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       },
-      manifest: {
-        name: 'BetaX Blog',
-        short_name: 'Blog',
-        description: 'BetaX Blog',
-        display: "standalone",
-        theme_color: '#f5f7f9',
-        background_color: "#F5F7F9",
-        icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any"
-          },
-          {
-            src: "/pwa-maskable-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable"
-          },
-          {
-            src: "/pwa-maskable-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable"
-          }
-        ]
-      }
+      manifest: false
     })
   ],
   server: {

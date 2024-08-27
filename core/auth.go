@@ -57,7 +57,7 @@ func (as AuthService) Callback(ctx *gin.Context) {
 	res, err := as.Config.Exchange(ctx, code)
 	if err != nil {
 		// 授权服务不可用
-		ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=1")
+		ctx.Redirect(http.StatusTemporaryRedirect, "/app/auth?state=1")
 		return
 	}
 	// 换取授权信息
@@ -65,7 +65,7 @@ func (as AuthService) Callback(ctx *gin.Context) {
 	user, err := as.QueryUserInfo(token)
 	if err != nil || user == nil {
 		// 授权信息无效
-		ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=2")
+		ctx.Redirect(http.StatusTemporaryRedirect, "/app/auth?state=2")
 		return
 	}
 
@@ -78,7 +78,7 @@ func (as AuthService) Callback(ctx *gin.Context) {
 		err := json.Unmarshal([]byte(check), &checkUser)
 		if err != nil || checkUser.Id != user.Id {
 			// 账户错误
-			ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=3")
+			ctx.Redirect(http.StatusTemporaryRedirect, "/app/auth?state=3")
 			return
 		}
 	}
@@ -86,10 +86,10 @@ func (as AuthService) Callback(ctx *gin.Context) {
 	token, exp, err := GenerateToken(user.Id)
 	if err != nil {
 		// 令牌签发失败
-		ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=4")
+		ctx.Redirect(http.StatusTemporaryRedirect, "/app/auth?state=4")
 		return
 	}
-	ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/app/#/auth?state=9&code=%s&exp=%v", token, exp))
+	ctx.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/app/auth?state=9&code=%s&exp=%v", token, exp))
 }
 
 type User struct {
@@ -228,7 +228,7 @@ func AuthHandler() gin.HandlerFunc {
 		}
 		if checkUser.Id != sub {
 			// 账户错误
-			ctx.Redirect(http.StatusTemporaryRedirect, "/app/#/auth?state=3")
+			ctx.Redirect(http.StatusTemporaryRedirect, "/app/auth?state=3")
 			return
 		}
 	}

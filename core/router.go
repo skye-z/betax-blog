@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bufio"
 	"embed"
 	"fmt"
 	"io"
@@ -68,6 +69,17 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	router.Object.StaticFS("/app", http.FS(appPage))
 	router.Object.StaticFS("/console", http.FS(consolePage))
 	router.Object.Static("/res", "./res")
+	// 兼容路由
+	router.Object.NoRoute(func(c *gin.Context) {
+		switch {
+		case strings.HasPrefix(c.Request.URL.Path, "/app"):
+			handleIndexFile(c, http.FS(appPage))
+		case strings.HasPrefix(c.Request.URL.Path, "/console"):
+			handleIndexFile(c, http.FS(consolePage))
+		default:
+			c.Status(http.StatusNotFound)
+		}
+	})
 
 	cs := CreateClassService(engine)
 	ts := CreateTagService(engine)
@@ -84,6 +96,38 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	return router
 }
 
+func handleIndexFile(c *gin.Context, fileSystem http.FileSystem) {
+	indexPath := "index.html"
+	indexContent, err := readFileFromFS(fileSystem, indexPath)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.Data(http.StatusOK, "text/html; charset=utf-8", indexContent)
+}
+
+func readFileFromFS(fileSystem http.FileSystem, filename string) ([]byte, error) {
+	f, err := fileSystem.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	var content []byte
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		content = append(content, []byte(line)...)
+		content = append(content, '\n')
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
+
 // 挂载公共路由
 func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService, ts *TagService, as *ArticleService, ss *SystemService) {
 	router.GET("/", func(ctx *gin.Context) {
@@ -92,6 +136,8 @@ func addPublicRoute(router *gin.Engine, common *CommonService, cs *ClassService,
 	})
 	// 初始化接口
 	router.POST("/api/install", ss.Install)
+	// 获取描述文件
+	router.GET("/api/manifest", common.GetWebManifest)
 	// 初始化接口(导航栏、页脚栏、布局信息等)
 	router.GET("/api/init", common.GetInitData)
 	// 获取博主信息

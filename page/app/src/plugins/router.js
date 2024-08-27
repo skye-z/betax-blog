@@ -11,7 +11,7 @@ const List = () => import('../views/list.vue')
 const Info = () => import('../views/info.vue')
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/app'),
     routes: [
         {
             name: 'Home',
