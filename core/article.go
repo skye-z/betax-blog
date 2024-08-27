@@ -1,25 +1,29 @@
 package core
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 	"github.com/skye-z/betax-blog/model"
 	"github.com/skye-z/betax-blog/util"
 	"xorm.io/xorm"
 )
 
 type ArticleService struct {
-	Data *model.ArticleData
+	Data  *model.ArticleData
+	Cache *cache.Cache
 }
 
-func CreateArticleService(engine *xorm.Engine) *ArticleService {
+func CreateArticleService(engine *xorm.Engine, cache *cache.Cache) *ArticleService {
 	data := &model.ArticleData{
 		Engine: engine,
 	}
 	return &ArticleService{
-		Data: data,
+		Data:  data,
+		Cache: cache,
 	}
 }
 
@@ -96,12 +100,20 @@ func (service ArticleService) GetInfo(ctx *gin.Context) {
 		util.ReturnMessage(ctx, false, "文章编号无效")
 		return
 	}
-	info := service.Data.Get(articleId)
-	if info == nil {
-		util.ReturnMessage(ctx, false, "获取文章详情失败")
+
+	info, found := service.Cache.Get("article:" + cache)
+	if !found {
+		article := service.Data.Get(articleId)
+		if article == nil {
+			util.ReturnMessage(ctx, false, "获取文章详情失败")
+		} else {
+			service.Cache.Set("article:"+cache, article, 24*time.Hour)
+			util.ReturnData(ctx, true, article)
+		}
 	} else {
 		util.ReturnData(ctx, true, info)
 	}
+
 }
 
 // 添加文章
@@ -132,6 +144,7 @@ func (service ArticleService) Edit(ctx *gin.Context) {
 	// 写入更新时间
 	article.LastUpdateTime = time.Now().Unix() * 1000
 	if service.Data.Edit(&article) {
+		service.Cache.Delete(fmt.Sprintf("article:&i", article.Id))
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "编辑文章失败")
@@ -151,6 +164,7 @@ func (service ArticleService) EditMeta(ctx *gin.Context) {
 	data.IsBanner = article.IsBanner
 	data.LastUpdateTime = time.Now().Unix() * 1000
 	if service.Data.EditMeta(data) {
+		service.Cache.Delete(fmt.Sprintf("article:&i", article.Id))
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "编辑文章失败")
@@ -169,6 +183,7 @@ func (service ArticleService) Publish(ctx *gin.Context) {
 	article.ReleaseTime = time.Now().Unix() * 1000
 	article.State = model.Official
 	if service.Data.Edit(article) {
+		service.Cache.Delete(fmt.Sprintf("article:&i", article.Id))
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "发布文章失败")
@@ -187,6 +202,7 @@ func (service ArticleService) SwitchState(ctx *gin.Context) {
 	article.LastUpdateTime = time.Now().Unix() * 1000
 	article.State = state
 	if service.Data.Edit(article) {
+		service.Cache.Delete(fmt.Sprintf("article:&i", article.Id))
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "文章状态更新失败")
@@ -201,6 +217,7 @@ func (service ArticleService) Remove(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Del(articleId) {
+		service.Cache.Delete(fmt.Sprintf("article:&i", articleId))
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "文章删除失败")

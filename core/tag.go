@@ -2,21 +2,24 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 	"github.com/skye-z/betax-blog/model"
 	"github.com/skye-z/betax-blog/util"
 	"xorm.io/xorm"
 )
 
 type TagService struct {
-	Data *model.TagData
+	Data  *model.TagData
+	Cache *cache.Cache
 }
 
-func CreateTagService(engine *xorm.Engine) *TagService {
+func CreateTagService(engine *xorm.Engine, cache *cache.Cache) *TagService {
 	data := &model.TagData{
 		Engine: engine,
 	}
 	return &TagService{
-		Data: data,
+		Data:  data,
+		Cache: cache,
 	}
 }
 
@@ -25,11 +28,18 @@ func (service TagService) GetList(ctx *gin.Context) {
 		util.ReturnMessage(ctx, false, "请完成初始化")
 		return
 	}
-	list, err := service.Data.GetSmallList()
-	if err != nil {
-		util.ReturnMessage(ctx, false, "获取标签列表失败")
+
+	info, found := service.Cache.Get("tags")
+	if !found {
+		list, err := service.Data.GetSmallList()
+		if err != nil {
+			util.ReturnMessage(ctx, false, "获取标签列表失败")
+		} else {
+			service.Cache.Set("tags", list, cache.NoExpiration)
+			util.ReturnData(ctx, true, list)
+		}
 	} else {
-		util.ReturnData(ctx, true, list)
+		util.ReturnData(ctx, true, info)
 	}
 }
 
@@ -42,6 +52,7 @@ func (service TagService) Add(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Add(&tag) {
+		service.Cache.Delete("tags")
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "创建标签失败")
@@ -57,6 +68,7 @@ func (service TagService) Edit(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Edit(&tag) {
+		service.Cache.Delete("tags")
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "编辑标签失败")
@@ -71,6 +83,7 @@ func (service TagService) Remove(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Del(tagId) {
+		service.Cache.Delete("tags")
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "标签删除失败")

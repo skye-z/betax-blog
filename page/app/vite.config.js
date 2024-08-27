@@ -38,7 +38,23 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,png,svg,jpg,ico,json}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^.*\/app\/api.*/g,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'api-data-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 30 * 24 * 60 * 60
+              },
+              cacheableResponse: {
+                statuses: [200]
+              }
+            }
+          }
+        ]
       },
       manifest: false
     })

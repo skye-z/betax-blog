@@ -15,6 +15,7 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 	"github.com/skye-z/betax-blog/util"
 	"xorm.io/xorm"
 )
@@ -69,6 +70,23 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 	router.Object.StaticFS("/app", http.FS(appPage))
 	router.Object.StaticFS("/console", http.FS(consolePage))
 	router.Object.Static("/res", "./res")
+
+	cm := cache.New(cache.NoExpiration, cache.DefaultExpiration)
+	cs := CreateClassService(engine, cm)
+	ts := CreateTagService(engine, cm)
+	as := CreateArticleService(engine, cm)
+	ss := CreateSystemService()
+	common := &CommonService{
+		Engine: engine,
+		Cache:  cm,
+	}
+
+	// 挂载鉴权路由
+	addOAuth2Route(router.Object)
+	// 挂载公共路由
+	addPublicRoute(router.Object, common, cs, ts, as, ss)
+	// 挂载私有路由
+	addPrivateRoute(router.Object, common, cs, ts, as, ss)
 	// 兼容路由
 	router.Object.NoRoute(func(c *gin.Context) {
 		switch {
@@ -80,19 +98,6 @@ func BuildRouter(release bool, port int, host, cert, key string, engine *xorm.En
 			c.Status(http.StatusNotFound)
 		}
 	})
-
-	cs := CreateClassService(engine)
-	ts := CreateTagService(engine)
-	as := CreateArticleService(engine)
-	ss := CreateSystemService()
-	common := &CommonService{Engine: engine}
-
-	// 挂载鉴权路由
-	addOAuth2Route(router.Object)
-	// 挂载公共路由
-	addPublicRoute(router.Object, common, cs, ts, as, ss)
-	// 挂载私有路由
-	addPrivateRoute(router.Object, common, cs, ts, as, ss)
 	return router
 }
 

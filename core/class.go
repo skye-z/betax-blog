@@ -2,21 +2,24 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 	"github.com/skye-z/betax-blog/model"
 	"github.com/skye-z/betax-blog/util"
 	"xorm.io/xorm"
 )
 
 type ClassService struct {
-	Data *model.ClassData
+	Data  *model.ClassData
+	Cache *cache.Cache
 }
 
-func CreateClassService(engine *xorm.Engine) *ClassService {
+func CreateClassService(engine *xorm.Engine, cache *cache.Cache) *ClassService {
 	data := &model.ClassData{
 		Engine: engine,
 	}
 	return &ClassService{
-		Data: data,
+		Data:  data,
+		Cache: cache,
 	}
 }
 
@@ -26,11 +29,18 @@ func (service ClassService) GetList(ctx *gin.Context) {
 		util.ReturnMessage(ctx, false, "请完成初始化")
 		return
 	}
-	list, err := service.Data.GetList()
-	if err != nil {
-		util.ReturnMessage(ctx, false, "获取分类列表失败")
+
+	info, found := service.Cache.Get("class")
+	if !found {
+		list, err := service.Data.GetList()
+		if err != nil {
+			util.ReturnMessage(ctx, false, "获取分类列表失败")
+		} else {
+			service.Cache.Set("class", list, cache.NoExpiration)
+			util.ReturnData(ctx, true, list)
+		}
 	} else {
-		util.ReturnData(ctx, true, list)
+		util.ReturnData(ctx, true, info)
 	}
 }
 
@@ -43,6 +53,7 @@ func (service ClassService) Add(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Add(&class) {
+		service.Cache.Delete("class")
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "创建分类失败")
@@ -58,6 +69,7 @@ func (service ClassService) Edit(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Edit(&class) {
+		service.Cache.Delete("class")
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "编辑分类失败")
@@ -72,6 +84,7 @@ func (service ClassService) Remove(ctx *gin.Context) {
 		return
 	}
 	if service.Data.Del(classId) {
+		service.Cache.Delete("class")
 		util.ReturnData(ctx, true, nil)
 	} else {
 		util.ReturnMessage(ctx, false, "分类删除失败")
