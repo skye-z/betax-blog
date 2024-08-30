@@ -22,6 +22,7 @@ However, BetaX Blog is still a dynamic blog, for higher performance and efficien
 - **🧠 AI Summarization**: Automatically generate summaries for your articles using AI.
 - **🔗 GitHub Integration**: Authenticate users via GitHub for seamless login and user management.
 - **☁️ WebDAV Synchronization**: Supports synchronization of database and resource files via WebDAV every 4 hours.
+- **⏬️ PWA Support**: PWAs provide a better experience for visitors when accessing over HTTPS and help reduce the number of requests.
 
 ## Getting Started
 
