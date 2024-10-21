@@ -49,6 +49,7 @@ export default {
                 content: `当前版本: ${this.info.version}\t最新版本: ${this.version.tag_name}\n版本名称: ${this.version.name}\n更新说明:\n${this.version.body}`,
                 positiveText: '开始更新',
                 negativeText: '取消',
+                contentClass: 'update-tips',
                 onPositiveClick: () => {
                     let tips = window.$message.loading('正在更新中', { duration: 1000 * 180 });
                     setting.updateVersion().then(res => {

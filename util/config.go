@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const Version = "0.2.0"
+const Version = "0.2.7"
 
 func InitConfig() {
 	viper.SetConfigName("config")
